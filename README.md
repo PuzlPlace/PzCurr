@@ -3,6 +3,13 @@
 Biblioteca de valores monetários com **precisão exata** (BCMath) para PHP e Laravel.
 Zero conversão para `float` em todo o ciclo de vida — criação, operações, persistência e formatação.
 
+## Documentação
+
+> **[Abrir documentação completa → `docs/index.html`](docs/index.html)**
+>
+> Referência da API, exemplos, configuração, casos de uso e integração Laravel.
+> No GitHub, clique no link acima para abrir o HTML direto no repositório.
+
 ---
 
 ## Instalação
