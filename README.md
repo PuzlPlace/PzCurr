@@ -8,7 +8,18 @@ Zero conversão para `float` em todo o ciclo de vida — criação, operações,
 > **[Abrir documentação completa no navegador →](https://puzlplace.github.io/PzCurr/)**
 >
 > Site estático (GitHub Pages) com API, exemplos, configuração e integração Laravel.
-> Fonte: [`docs/index.html`](docs/index.html) — após o push em `master`, o deploy leva ~1 minuto.
+> Fonte: [`docs/index.html`](docs/index.html).
+
+### Publicar no GitHub Pages (uma vez no repositório)
+
+O workflow [`.github/workflows/pages.yml`](.github/workflows/pages.yml) só consegue publicar depois que o Pages estiver ligado no GitHub:
+
+1. Abra **Settings → Pages** do repositório:  
+   [github.com/PuzlPlace/PzCurr/settings/pages](https://github.com/PuzlPlace/PzCurr/settings/pages)
+2. Em **Build and deployment → Source**, escolha **GitHub Actions** (não “Deploy from a branch”).
+3. Rode o deploy: **Actions → Documentation (GitHub Pages) → Run workflow**, ou faça um push em `master` que altere `docs/**`.
+
+Após um deploy com sucesso, o link acima passa a abrir o site (em geral em ~1 minuto). Se ainda aparecer 404, confira o último run em [Actions](https://github.com/PuzlPlace/PzCurr/actions/workflows/pages.yml) — o passo `configure-pages` falha quando o Pages não está habilitado.
 
 ---
 
