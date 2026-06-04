@@ -1,5 +1,14 @@
 # Dependências (instalar com composer install)
 /vendor/
+vendor/
+
+# Cursor — ambiente local (não versionar)
+.cursor/plans/
+.cursor/rules/local.mdc
+
+# Planejamento e tarefas locais
+plans/
+tasks/
 
 # PHPUnit
 .phpunit.result.cache
