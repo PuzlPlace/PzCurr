@@ -5,10 +5,10 @@ Zero conversão para `float` em todo o ciclo de vida — criação, operações,
 
 ## Documentação
 
-> **[Abrir documentação completa → `docs/index.html`](docs/index.html)**
+> **[Abrir documentação completa no navegador →](https://puzlplace.github.io/PzCurr/)**
 >
-> Referência da API, exemplos, configuração, casos de uso e integração Laravel.
-> No GitHub, clique no link acima para abrir o HTML direto no repositório.
+> Site estático (GitHub Pages) com API, exemplos, configuração e integração Laravel.
+> Fonte: [`docs/index.html`](docs/index.html) — após o push em `master`, o deploy leva ~1 minuto.
 
 ---
 
