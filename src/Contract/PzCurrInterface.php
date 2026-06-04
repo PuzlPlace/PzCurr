@@ -6,6 +6,7 @@ namespace Puzl\PzCurr\Contract;
 
 use Puzl\PzCurr\Currency\PzCurrCurrency;
 use Puzl\PzCurr\Enum\PzCurrCurrencyEnum;
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
 use Puzl\PzCurr\Enum\PzCurrRoundingModeEnum;
 
 /**
@@ -167,7 +168,7 @@ interface PzCurrInterface extends \JsonSerializable
     public function getScale(): int;
 
     /** Formata o valor para exibição humana, com locale opcional. */
-    public function format(?string $locale = null): string;
+    public function format(?PzCurrLocaleEnum $locale = null): string;
 
     // -------------------------------------------------------------------------
     // Serialização — RF-07

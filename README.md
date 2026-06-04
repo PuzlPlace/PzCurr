@@ -163,6 +163,32 @@ $pedido = $factory
 
 ---
 
+## Formatação e locale
+
+O `format()` gera a string de exibição. Sem argumento, usa o modo manual (separadores e símbolo
+da config, padrão pt-BR). Para formatar por locale (via `NumberFormatter` da extensão `intl`),
+passe um case do enum **`PzCurrLocaleEnum`** — o parâmetro **não é mais uma `string`**:
+
+```php
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
+use Puzl\PzCurr\Factory\PzCurrFactory;
+
+// Sem locale → modo manual (config / pt-BR)
+PzCurrFactory::make()->of('1234.56', 'BRL')->format();              // 'R$ 1.234,56'
+
+// Com locale → enum PzCurrLocaleEnum (requer ext-intl; sem intl, cai no modo manual)
+PzCurrFactory::make()->of('99.99', 'USD')->format(PzCurrLocaleEnum::EN_US);   // '$99.99'
+PzCurrFactory::make()->of('1234.56', 'EUR')->format(PzCurrLocaleEnum::DE_DE); // '1.234,56 €'
+```
+
+Locales disponíveis no enum: `PT_BR`, `PT_PT`, `EN_US`, `EN_GB`, `ES_ES`, `ES_MX`, `DE_DE`,
+`FR_FR`, `IT_IT`, `JA_JP`, `ZH_CN`. É uma lista curada; adicione novos cases conforme a necessidade.
+
+> **Migração:** chamadas antigas com string (`->format('en_US')`) devem passar a usar o enum
+> (`->format(PzCurrLocaleEnum::EN_US)`).
+
+---
+
 ## Persistência com Eloquent Cast
 
 O `PzCurrCast` persiste o valor em **duas colunas** — `*_amount` (string decimal) e `*_currency` (código ISO 4217) — sem nenhuma conversão para `float`.
@@ -274,7 +300,7 @@ PzCurrFactory::make()->of('19.90', PzCurrCurrencyEnum::BRL); // OK (string)
 
 - PHP `^8.1`
 - Extensão `bcmath` (obrigatória)
-- Extensão `intl` (opcional — formatação por locale)
+- Extensão `intl` (opcional — formatação por locale via `PzCurrLocaleEnum`)
 - Laravel / Illuminate `^10|^11|^12` (opcional — integração ServiceProvider + Cast)
 
 ---

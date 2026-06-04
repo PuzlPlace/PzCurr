@@ -8,6 +8,7 @@ use Puzl\PzCurr\Adapter\PzCurrBase;
 use Puzl\PzCurr\Contract\PzCurrInterface;
 use Puzl\PzCurr\Currency\PzCurrCurrencyRegistry;
 use Puzl\PzCurr\Enum\PzCurrCurrencyEnum;
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
 use Puzl\PzCurr\Enum\PzCurrRoundingModeEnum;
 
 
@@ -186,7 +187,7 @@ final class PzCurrBaseStub extends PzCurrBase
         return (int) $this->amount;
     }
 
-    public function format(?string $locale = null): string
+    public function format(?PzCurrLocaleEnum $locale = null): string
     {
         return $this->amount;
     }

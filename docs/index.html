@@ -568,7 +568,7 @@
           <tr><td>PHP ^8.1</td><td>Sim</td><td></td></tr>
           <tr><td>ext-bcmath</td><td>Sim</td><td>Toda aritmética depende dela</td></tr>
           <tr><td>Illuminate ^10|^11|^12</td><td>Não</td><td>Necessário só para Cast e config Laravel</td></tr>
-          <tr><td>ext-intl</td><td>Não</td><td>Formatação por locale (<code>format('pt_BR')</code>)</td></tr>
+          <tr><td>ext-intl</td><td>Não</td><td>Formatação por locale (<code>format(PzCurrLocaleEnum::PT_BR)</code>)</td></tr>
         </tbody>
       </table>
 
@@ -833,17 +833,19 @@
         <tbody>
           <tr><td><code>getAmount()</code> / <code>toDecimal()</code></td><td>string</td><td>Persistência, APIs, cálculos</td></tr>
           <tr><td><code>getMinorAmount()</code></td><td>int</td><td>Centavos, Stripe-like APIs</td></tr>
-          <tr><td><code>format(?$locale)</code></td><td>string</td><td>Exibição humana</td></tr>
+          <tr><td><code>format(?PzCurrLocaleEnum $locale)</code></td><td>string</td><td>Exibição humana (locale via enum)</td></tr>
           <tr><td><code>toArray()</code> / <code>jsonSerialize()</code></td><td>array</td><td>JSON, logs, filas</td></tr>
           <tr><td><code>toFloat()</code></td><td>float</td><td>⚠ Só exibição legada — evite</td></tr>
         </tbody>
       </table>
 
-<pre><code><span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'1234.56'</span>, <span class="str">'BRL'</span>)-><span class="fn">format</span>();
+<pre><code><span class="kw">use</span> <span class="cls">Puzl\PzCurr\Enum\PzCurrLocaleEnum</span>;
+
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'1234.56'</span>, <span class="str">'BRL'</span>)-><span class="fn">format</span>();
 <span class="cmt">// 'R$ 1.234,56' (separadores da config)</span>
 
-<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'99.99'</span>, <span class="str">'USD'</span>)-><span class="fn">format</span>(<span class="str">'en_US'</span>);
-<span class="cmt">// Requer ext-intl</span></code></pre>
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'99.99'</span>, <span class="str">'USD'</span>)-><span class="fn">format</span>(<span class="cls">PzCurrLocaleEnum</span>::EN_US);
+<span class="cmt">// Locale agora é o enum PzCurrLocaleEnum (não mais string). Requer ext-intl</span></code></pre>
     </section>
 
     <!-- LARAVEL -->

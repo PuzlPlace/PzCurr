@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Puzl\PzCurr\Support;
 
 use Puzl\PzCurr\Currency\PzCurrCurrency;
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
 
 /**
  * Formata valor monetário para exibição humana.
@@ -37,14 +38,14 @@ final class PzCurrFormatter
     /**
      * Formata $amount (string decimal, ex.: '1234.56') para exibição.
      *
-     * @param string|null $locale Tag BCP-47 (ex.: 'pt_BR'); com intl, formata por locale.
+     * @param PzCurrLocaleEnum|null $locale Locale ICU (ex.: PzCurrLocaleEnum::PT_BR); com intl, formata por locale.
      */
-    public function format(string $amount, PzCurrCurrency $currency, ?string $locale = null): string
+    public function format(string $amount, PzCurrCurrency $currency, ?PzCurrLocaleEnum $locale = null): string
     {
         $useIntl = $this->intlAvailable ?? extension_loaded('intl');
 
         if ($locale !== null && $useIntl) {
-            return $this->formatWithIntl($amount, $currency, $locale);
+            return $this->formatWithIntl($amount, $currency, $locale->value);
         }
 
         return $this->formatManual($amount, $currency);

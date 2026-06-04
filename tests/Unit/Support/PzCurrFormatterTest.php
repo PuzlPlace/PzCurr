@@ -6,6 +6,7 @@ namespace Puzl\PzCurr\Tests\Unit\Support;
 
 use PHPUnit\Framework\TestCase;
 use Puzl\PzCurr\Currency\PzCurrCurrencyRegistry;
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
 use Puzl\PzCurr\Support\PzCurrFormatter;
 
 final class PzCurrFormatterTest extends TestCase
@@ -99,7 +100,7 @@ final class PzCurrFormatterTest extends TestCase
         $currency  = PzCurrCurrencyRegistry::of('BRL');
 
         // Mesmo com locale, deve produzir saída manual.
-        $result = $formatter->format('1234.56', $currency, 'pt_BR');
+        $result = $formatter->format('1234.56', $currency, PzCurrLocaleEnum::PT_BR);
 
         $this->assertSame('R$ 1.234,56', $result);
     }

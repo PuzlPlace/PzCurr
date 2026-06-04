@@ -7,6 +7,7 @@ namespace Puzl\PzCurr\Adapter;
 use Puzl\PzCurr\Contract\PzCurrInterface;
 use Puzl\PzCurr\Currency\PzCurrCurrency;
 use Puzl\PzCurr\Enum\PzCurrCurrencyEnum;
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
 use Puzl\PzCurr\Enum\PzCurrRoundingModeEnum;
 use Puzl\PzCurr\Exception\PzCurrencyMismatchException;
 use Puzl\PzCurr\Exception\PzCurrInvalidScaleException;
@@ -241,5 +242,5 @@ abstract class PzCurrBase implements PzCurrInterface
 
     abstract public function getMinorAmount(): int;
 
-    abstract public function format(?string $locale = null): string;
+    abstract public function format(?PzCurrLocaleEnum $locale = null): string;
 }

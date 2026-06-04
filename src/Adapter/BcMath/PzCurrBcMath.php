@@ -8,6 +8,7 @@ use Puzl\PzCurr\Adapter\PzCurrBase;
 use Puzl\PzCurr\Contract\PzCurrInterface;
 use Puzl\PzCurr\Currency\PzCurrCurrencyRegistry;
 use Puzl\PzCurr\Enum\PzCurrCurrencyEnum;
+use Puzl\PzCurr\Enum\PzCurrLocaleEnum;
 use Puzl\PzCurr\Enum\PzCurrRoundingModeEnum;
 use Puzl\PzCurr\Exception\PzCurrDivisionByZeroException;
 use Puzl\PzCurr\Exception\PzCurrFloatNotAllowedException;
@@ -410,7 +411,7 @@ final class PzCurrBcMath extends PzCurrBase
      * Com $locale e extensão intl, usa formatação por locale; caso contrário,
      * aplica separadores e símbolo de config('pzcurr.formatting') ou padrão pt-BR.
      */
-    public function format(?string $locale = null): string
+    public function format(?PzCurrLocaleEnum $locale = null): string
     {
         return self::buildFormatter()->format($this->amount, $this->getCurrency(), $locale);
     }
