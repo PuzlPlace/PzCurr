@@ -43,11 +43,13 @@ abstract class PzCurrBase implements PzCurrInterface
     // Métodos concretos — sem dependência de bc*
     // -------------------------------------------------------------------------
 
+    /** Retorna o amount como string decimal. */
     public function getAmount(): string
     {
         return $this->amount;
     }
 
+    /** Alias semântico de getAmount(). */
     public function toDecimal(): string
     {
         return $this->amount;
@@ -66,6 +68,7 @@ abstract class PzCurrBase implements PzCurrInterface
         return (float) $this->amount;
     }
 
+    /** Retorna a moeda da instância. @throws \LogicException se of() ainda não foi chamado. */
     public function getCurrency(): PzCurrCurrency
     {
         if ($this->currency === null) {
@@ -75,11 +78,13 @@ abstract class PzCurrBase implements PzCurrInterface
         return $this->currency;
     }
 
+    /** Retorna a escala (casas decimais) da instância. */
     public function getScale(): int
     {
         return $this->scale;
     }
 
+    /** Define o modo de arredondamento padrão para operações subsequentes. */
     public function withRoundingMode(PzCurrRoundingModeEnum $mode): self
     {
         $this->roundingMode = $mode;
@@ -87,15 +92,15 @@ abstract class PzCurrBase implements PzCurrInterface
         return $this;
     }
 
+    /** Retorna cópia independente (clone) do objeto atual. */
     public function copy(): self
     {
         return clone $this;
     }
 
     /**
-     * Writes a pre-computed amount string directly, bypassing validation and rounding.
-     * Intended for internal use by allocate/split implementations that already hold
-     * exact minor-unit results.
+     * Define amount pré-calculado, sem validação nem arredondamento.
+     * Uso interno de allocate/split com resultados exatos em unidades menores.
      */
     protected function setAmountInternal(string $amount): self
     {
@@ -104,9 +109,7 @@ abstract class PzCurrBase implements PzCurrInterface
         return $this;
     }
 
-    /**
-     * @return array{amount: string, currency: string, scale: int}
-     */
+    /** @return array{amount: string, currency: string, scale: int} */
     public function toArray(): array
     {
         return [
@@ -116,9 +119,7 @@ abstract class PzCurrBase implements PzCurrInterface
         ];
     }
 
-    /**
-     * @return array{amount: string, currency: string, scale: int}
-     */
+    /** Serializa para JSON (mesma estrutura de toArray()). @return array{amount: string, currency: string, scale: int} */
     public function jsonSerialize(): array
     {
         return $this->toArray();

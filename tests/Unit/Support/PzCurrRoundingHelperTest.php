@@ -102,7 +102,7 @@ final class PzCurrRoundingHelperTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // UP (away from zero)
+    // UP (para longe de zero)
     // -----------------------------------------------------------------------
 
     /**
@@ -128,7 +128,7 @@ final class PzCurrRoundingHelperTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // DOWN (toward zero / truncate)
+    // DOWN (em direção a zero / trunca)
     // -----------------------------------------------------------------------
 
     /**
@@ -153,7 +153,7 @@ final class PzCurrRoundingHelperTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // CEILING (toward +∞)
+    // CEILING (em direção a +∞)
     // -----------------------------------------------------------------------
 
     /**
@@ -178,7 +178,7 @@ final class PzCurrRoundingHelperTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // FLOOR (toward −∞)
+    // FLOOR (em direção a −∞)
     // -----------------------------------------------------------------------
 
     /**
@@ -248,7 +248,7 @@ final class PzCurrRoundingHelperTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Edge cases
+    // Casos limite
     // -----------------------------------------------------------------------
 
     public function test_zero_scale_with_no_decimal(): void
@@ -271,21 +271,21 @@ final class PzCurrRoundingHelperTest extends TestCase
 
     public function test_ceiling_negative_exact_half(): void
     {
-        // CEILING: toward +∞; -2.345 → -2.34 (truncate, not more negative)
+        // CEILING: em direção a +∞; -2.345 → -2.34 (trunca)
         $result = PzCurrRoundingHelper::round('-2.345', 2, PzCurrRoundingModeEnum::CEILING);
         $this->assertSame('-2.34', $result);
     }
 
     public function test_floor_positive_exact_half(): void
     {
-        // FLOOR: toward −∞; 2.345 → 2.34 (truncate, not 2.35)
+        // FLOOR: em direção a −∞; 2.345 → 2.34 (trunca)
         $result = PzCurrRoundingHelper::round('2.345', 2, PzCurrRoundingModeEnum::FLOOR);
         $this->assertSame('2.34', $result);
     }
 
     public function test_floor_negative_exact_half(): void
     {
-        // FLOOR: toward −∞; -2.345 → -2.35
+        // FLOOR: em direção a −∞; -2.345 → -2.35
         $result = PzCurrRoundingHelper::round('-2.345', 2, PzCurrRoundingModeEnum::FLOOR);
         $this->assertSame('-2.35', $result);
     }

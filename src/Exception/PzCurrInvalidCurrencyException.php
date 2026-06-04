@@ -12,7 +12,7 @@ final class PzCurrInvalidCurrencyException extends PzCurrException
     public static function forCode(string $code): self
     {
         return new self(sprintf(
-            'Código de moeda inválido ou não suportado: "%s". Use um código ISO 4217 válido (ex.: "BRL", "USD").',
+            'Invalid or unsupported currency code: "%s". Use a valid ISO 4217 code (e.g. "BRL", "USD").',
             $code
         ));
     }

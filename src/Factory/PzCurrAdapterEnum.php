@@ -10,6 +10,7 @@ enum PzCurrAdapterEnum: int
     case BRICK_MONEY = 1;  // previsto, sem implementação (fallback → BCMATH)
     case MONEYPHP = 2;     // previsto, sem implementação (fallback → BCMATH)
 
+    /** Resolve case pelo nome (ex.: 'BCMATH'); retorna null se inválido. */
     public static function tryFromName(string $name): ?self
     {
         foreach (self::cases() as $case) {

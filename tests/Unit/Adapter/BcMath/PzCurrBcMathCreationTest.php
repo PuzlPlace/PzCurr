@@ -197,7 +197,7 @@ final class PzCurrBcMathCreationTest extends TestCase
 
     public function test_constructor_accepts_custom_rounding_mode(): void
     {
-        // '1.005' at scale 2 with HALF_DOWN → '1.00' (guide digit 5 rounds toward zero)
+        // '1.005' na escala 2 com HALF_DOWN → '1.00' (dígito guia 5 arredonda em direção a zero)
         $m = (new PzCurrBcMath(PzCurrRoundingModeEnum::HALF_DOWN))->of('1.005', 'BRL');
 
         $this->assertSame('1.00', $m->getAmount());

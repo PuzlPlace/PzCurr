@@ -12,7 +12,7 @@ final class PzCurrRoundingNecessaryException extends PzCurrException
     public static function forScale(string $amount, int $scale): self
     {
         return new self(sprintf(
-            'Arredondamento necessário para representar "%s" na escala %d, mas o modo UNNECESSARY foi configurado.',
+            'Rounding is required to represent "%s" at scale %d, but UNNECESSARY mode was configured.',
             $amount,
             $scale
         ));

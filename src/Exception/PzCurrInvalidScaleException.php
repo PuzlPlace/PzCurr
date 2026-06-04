@@ -12,7 +12,7 @@ final class PzCurrInvalidScaleException extends PzCurrException
     public static function negative(int $scale): self
     {
         return new self(sprintf(
-            'Escala inválida: %d. A escala (número de casas decimais) deve ser maior ou igual a 0.',
+            'Invalid scale: %d. Scale (number of decimal places) must be greater than or equal to 0.',
             $scale
         ));
     }

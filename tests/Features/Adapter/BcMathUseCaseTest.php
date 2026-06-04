@@ -9,20 +9,20 @@ use Puzl\PzCurr\Adapter\BcMath\PzCurrBcMath;
 use Puzl\PzCurr\Enum\PzCurrRoundingModeEnum;
 
 /**
- * End-to-end integration tests for PzCurrBcMath.
+ * Testes de integração end-to-end do PzCurrBcMath.
  *
- * These tests exercise the adapter in realistic use-case scenarios,
- * verifying the full calculation pipeline without any Laravel infrastructure.
+ * Exercita o adapter em cenários realistas, verificando o pipeline completo
+ * sem infraestrutura Laravel.
  */
 final class BcMathUseCaseTest extends TestCase
 {
     // -------------------------------------------------------------------------
-    // Use case: order total calculation
+    // Caso de uso: total de pedido
     // -------------------------------------------------------------------------
 
     public function test_order_total_calculation(): void
     {
-        // Base price 25.00, add shipping 4.99, subtract discount 2.50, quantity 2
+        // Preço base 25.00 + frete 4.99 − desconto 2.50, quantidade 2
         $total = (new PzCurrBcMath())
             ->of('25.00', 'BRL')
             ->add('4.99')
@@ -34,7 +34,7 @@ final class BcMathUseCaseTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Use case: division with default HALF_UP rounding
+    // Caso de uso: divisão com HALF_UP padrão
     // -------------------------------------------------------------------------
 
     public function test_division_with_default_half_up_rounding(): void
@@ -47,12 +47,12 @@ final class BcMathUseCaseTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Use case: repeated sum keeps precision
+    // Caso de uso: soma repetida mantém precisão
     // -------------------------------------------------------------------------
 
     public function test_sum_of_many_small_amounts(): void
     {
-        // 100 × 0.10 should be exactly 10.00
+        // 100 × 0.10 deve ser exatamente 10.00
         $m = (new PzCurrBcMath())->zero('BRL');
 
         for ($i = 0; $i < 100; $i++) {
@@ -63,7 +63,7 @@ final class BcMathUseCaseTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Use case: copy and branch calculation
+    // Caso de uso: copy() e ramificação de cálculo
     // -------------------------------------------------------------------------
 
     public function test_copy_allows_branched_calculation(): void
@@ -78,7 +78,7 @@ final class BcMathUseCaseTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Use case: negative balance scenario
+    // Caso de uso: saldo negativo
     // -------------------------------------------------------------------------
 
     public function test_negative_balance_operations(): void
@@ -93,7 +93,7 @@ final class BcMathUseCaseTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Use case: scale conversion
+    // Caso de uso: conversão de escala
     // -------------------------------------------------------------------------
 
     public function test_scale_change_after_operations(): void
@@ -104,12 +104,12 @@ final class BcMathUseCaseTest extends TestCase
             ->withScale(4, PzCurrRoundingModeEnum::HALF_UP);
 
         $this->assertSame(4, $m->getScale());
-        // After BRL divide(3) → '3.33', then withScale(4) → '3.33' (no excess to round)
+        // Após divide(3) → '3.33', withScale(4) → '3.33' (sem excesso a arredondar)
         $this->assertSame('3.33', $m->getAmount());
     }
 
     // -------------------------------------------------------------------------
-    // Use case: toArray / jsonSerialize
+    // Caso de uso: toArray / jsonSerialize
     // -------------------------------------------------------------------------
 
     public function test_to_array_structure(): void

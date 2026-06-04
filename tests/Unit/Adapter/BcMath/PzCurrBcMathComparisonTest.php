@@ -350,7 +350,7 @@ final class PzCurrBcMathComparisonTest extends TestCase
         $brl = (new PzCurrBcMath())->of('5.00', 'BRL');
         $usd = (new PzCurrBcMath())->of('5.00', 'USD');
 
-        // Must NOT throw PzCurrencyMismatchException — returns false instead
+        // Não deve lançar PzCurrencyMismatchException — retorna false.
         $this->assertFalse($brl->isSameValueAs($usd));
     }
 

@@ -130,7 +130,7 @@ final class PzCurrBcMathOutputTest extends TestCase
 
         $array = $pz->toArray();
 
-        // All values must be either string or int — no float anywhere.
+        // Todos os valores devem ser string ou int — nunca float.
         $this->assertIsString($array['amount']);
         $this->assertIsString($array['currency']);
         $this->assertIsInt($array['scale']);
@@ -162,7 +162,7 @@ final class PzCurrBcMathOutputTest extends TestCase
         $pz   = (new PzCurrBcMath())->of('19.90', 'BRL');
         $json = json_encode($pz, JSON_THROW_ON_ERROR);
 
-        // Amount must be encoded as a JSON string ("19.90"), not a number.
+        // Amount deve ser string JSON ("19.90"), não número.
         $this->assertStringContainsString('"amount":"19.90"', $json);
     }
 

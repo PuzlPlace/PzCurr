@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PzCurr — biblioteca PHP de valores monetários com precisão exata (BCMath) para Laravel.">
+  <title>PzCurr — Guia da biblioteca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #0d9488;
+      --accent-hover: #0f766e;
+      --accent-soft: #ccfbf1;
+      --code-bg: #1e293b;
+      --code-text: #e2e8f0;
+      --warn-bg: #fffbeb;
+      --warn-border: #f59e0b;
+      --danger-bg: #fef2f2;
+      --danger-border: #ef4444;
+      --success-bg: #ecfdf5;
+      --success-border: #10b981;
+      --info-bg: #eff6ff;
+      --info-border: #3b82f6;
+      --sidebar-w: 260px;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px rgba(15, 23, 42, 0.04);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 5rem;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 1.05rem;
+      line-height: 1.65;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* Layout */
+    .layout {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem 0;
+    }
+
+    .sidebar-brand {
+      padding: 0 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .sidebar-brand h1 {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+    }
+
+    .sidebar-brand p {
+      margin: 0.25rem 0 0;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .nav-group {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-group-title {
+      padding: 0.5rem 1.25rem 0.25rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 0.35rem 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .sidebar a:hover,
+    .sidebar a.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .main {
+      max-width: 52rem;
+      padding: 2.5rem 3rem 4rem;
+    }
+
+    /* Hero */
+    .hero {
+      margin-bottom: 3rem;
+      padding: 2.5rem;
+      background: linear-gradient(135deg, #0d9488 0%, #115e59 100%);
+      border-radius: var(--radius);
+      color: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .hero h2 {
+      margin: 0 0 0.75rem;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 1.1rem;
+      opacity: 0.92;
+      max-width: 36rem;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.25rem 0.65rem;
+      background: rgba(255,255,255,0.2);
+      border-radius: 999px;
+    }
+
+    /* Typography */
+    section { margin-bottom: 3rem; }
+
+    h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      margin: 0 0 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--accent-soft);
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 1.75rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem;
+    }
+
+    p { margin: 0 0 1rem; }
+
+    ul, ol {
+      margin: 0 0 1rem;
+      padding-left: 1.35rem;
+    }
+
+    li { margin-bottom: 0.35rem; }
+
+    a { color: var(--accent); }
+    a:hover { color: var(--accent-hover); }
+
+    strong { font-weight: 600; }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card h4 {
+      margin: 0 0 0.5rem;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    .card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* Callouts */
+    .callout {
+      border-radius: var(--radius);
+      padding: 1rem 1.15rem;
+      margin: 1.25rem 0;
+      border-left: 4px solid;
+      font-size: 0.95rem;
+    }
+
+    .callout-title {
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      font-size: 0.9rem;
+    }
+
+    .callout-warn { background: var(--warn-bg); border-color: var(--warn-border); }
+    .callout-danger { background: var(--danger-bg); border-color: var(--danger-border); }
+    .callout-success { background: var(--success-bg); border-color: var(--success-border); }
+    .callout-info { background: var(--info-bg); border-color: var(--info-border); }
+
+    /* Code */
+    pre {
+      margin: 1rem 0;
+      padding: 1.15rem 1.25rem;
+      background: var(--code-bg);
+      color: var(--code-text);
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      line-height: 1.55;
+      box-shadow: var(--shadow);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88em;
+      background: #f1f5f9;
+      color: #0f766e;
+      padding: 0.15em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    .kw { color: #c084fc; }
+    .fn { color: #67e8f9; }
+    .str { color: #86efac; }
+    .cmt { color: #94a3b8; font-style: italic; }
+    .cls { color: #fcd34d; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    th, td {
+      padding: 0.65rem 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* Compare columns */
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .vs-box {
+      padding: 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .vs-box.yes { border-color: var(--success-border); }
+    .vs-box.no { border-color: var(--danger-border); }
+
+    .vs-box h4 { margin-top: 0; }
+
+    /* API method list */
+    .method {
+      margin: 1.5rem 0;
+      padding: 1rem 1.15rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .method-sig {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    .method-desc {
+      margin: 0.5rem 0 0;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* Mobile */
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      z-index: 100;
+      width: 3rem;
+      height: 3rem;
+      border: none;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 1.25rem;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(13, 148, 136, 0.4);
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar {
+        position: fixed;
+        left: -100%;
+        z-index: 50;
+        width: var(--sidebar-w);
+        transition: left 0.25s;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.1);
+      }
+      .sidebar.open { left: 0; }
+      .main { padding: 1.5rem 1.25rem 5rem; max-width: none; }
+      .menu-toggle { display: flex; align-items: center; justify-content: center; }
+      .vs-grid { grid-template-columns: 1fr; }
+      .hero { padding: 1.5rem; }
+      .hero h2 { font-size: 1.5rem; }
+    }
+
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<button class="menu-toggle" type="button" aria-label="Abrir menu" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</button>
+
+<div class="layout">
+  <nav class="sidebar" aria-label="Navegação">
+    <div class="sidebar-brand">
+      <h1>PzCurr</h1>
+      <p>puzl/pzcurr · PHP 8.1+</p>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Começar</div>
+      <a href="#intro">O que é</a>
+      <a href="#por-que">Por que usar</a>
+      <a href="#faz-nao-faz">O que faz / não faz</a>
+      <a href="#instalacao">Instalação</a>
+      <a href="#inicio-rapido">Início rápido</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Conceitos</div>
+      <a href="#conceitos">Conceitos-chave</a>
+      <a href="#moedas">Moedas e escala</a>
+      <a href="#mutabilidade">Mutabilidade e copy()</a>
+      <a href="#float">Float e modo STRICT</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">API</div>
+      <a href="#criacao">Criação</a>
+      <a href="#aritmetica">Aritmética</a>
+      <a href="#comparacao">Comparações</a>
+      <a href="#arredondamento">Arredondamento</a>
+      <a href="#distribuicao">allocate / split</a>
+      <a href="#saida">Saída e formatação</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Laravel</div>
+      <a href="#laravel">Integração Laravel</a>
+      <a href="#config">Configuração</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-title">Referência</div>
+      <a href="#excecoes">Exceções</a>
+      <a href="#nfe">NF-e / NFC-e</a>
+      <a href="#boas-praticas">Boas práticas</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <header class="hero">
+      <h2>Dinheiro com precisão exata em PHP</h2>
+      <p>PzCurr é uma biblioteca para representar, calcular e persistir valores monetários sem os erros clássicos de <code>float</code>. Pensada para Laravel, mas utilizável em qualquer projeto PHP com BCMath.</p>
+      <div class="hero-tags">
+        <span class="tag">BCMath</span>
+        <span class="tag">ISO 4217</span>
+        <span class="tag">Laravel Cast</span>
+        <span class="tag">NF-e</span>
+        <span class="tag">Zero float no domínio</span>
+      </div>
+    </header>
+
+    <!-- INTRO -->
+    <section id="intro">
+      <h2>O que é o PzCurr?</h2>
+      <p>O PzCurr implementa o <strong>padrão Money</strong> (Martin Fowler): um tipo dedicado para valores monetários, com moeda, escala (casas decimais) e operações seguras. Em vez de guardar <code>19.90</code> como <code>float</code> ou <code>decimal</code> solto, você trabalha com um objeto que sabe <em>quanto</em> vale e <em>em qual moeda</em>.</p>
+
+      <div class="cards">
+        <div class="card">
+          <h4>Precisão exata</h4>
+          <p>Toda aritmética usa BCMath sobre <strong>strings</strong>. Não há conversão para float nos cálculos.</p>
+        </div>
+        <div class="card">
+          <h4>API fluente</h4>
+          <p>Encadeie operações: <code>of('10')->add('5')->multiply('2')</code>. Legível e expressivo.</p>
+        </div>
+        <div class="card">
+          <h4>Laravel pronto</h4>
+          <p>Cast Eloquent em duas colunas (<code>amount</code> + <code>currency</code>), Service Provider e config publicável.</p>
+        </div>
+        <div class="card">
+          <h4>Brasil em mente</h4>
+          <p>Moeda padrão BRL, formatação pt-BR, cenários de NF-e com escala alta e arredondamento HALF_UP.</p>
+        </div>
+      </div>
+
+      <p>O ponto de entrada é sempre a <strong>Factory</strong>:</p>
+<pre><code><span class="kw">use</span> <span class="cls">Puzl\PzCurr\Factory\PzCurrFactory</span>;
+
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'25.00'</span>)      <span class="cmt">// moeda omitida → BRL</span>
+    -><span class="fn">add</span>(<span class="str">'4.99'</span>)
+    -><span class="fn">format</span>();          <span class="cmt">// 'R$ 29,99'</span></code></pre>
+
+      <p>Você depende apenas da interface <code>PzCurrInterface</code> — nunca do adapter concreto (<code>PzCurrBcMath</code>).</p>
+    </section>
+
+    <!-- POR QUE -->
+    <section id="por-que">
+      <h2>Por que não usar float ou decimal solto?</h2>
+      <p>Em PHP (e na maioria das linguagens), <code>float</code> segue o padrão IEEE 754. Muitos decimais — como <code>0.1</code> — <strong>não têm representação exata</strong> em binário. Isso gera surpresas em somas, comparações e persistência.</p>
+
+<pre><code><span class="cmt">// Problema clássico em PHP puro:</span>
+<span class="fn">var_dump</span>(<span class="str">0.1</span> + <span class="str">0.2</span> === <span class="str">0.3</span>);  <span class="cmt">// bool(false)</span>
+
+<span class="cmt">// Com PzCurr (strings + BCMath):</span>
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'0.1'</span>)-><span class="fn">add</span>(<span class="str">'0.2'</span>)-><span class="fn">isEqualTo</span>(<span class="str">'0.3'</span>);  <span class="cmt">// true</span></code></pre>
+
+      <p>Em sistemas financeiros, e-commerce, folha de pagamento ou emissão de notas fiscais, centavos “perdidos” viram divergência contábil, rejeição na SEFAZ ou reclamação de cliente. O PzCurr existe para evitar isso desde o primeiro <code>of()</code> até o <code>save()</code> no banco.</p>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Inspiração</div>
+        A ideia é a mesma de bibliotecas consagradas como <a href="https://www.moneyphp.org/" target="_blank" rel="noopener">Money PHP</a> e <a href="https://www.dinerojs.com/" target="_blank" rel="noopener">Dinero.js</a>: tratar dinheiro como valor de primeira classe, não como número genérico.
+      </div>
+    </section>
+
+    <!-- FAZ / NÃO FAZ -->
+    <section id="faz-nao-faz">
+      <h2>O que faz e o que não faz</h2>
+
+      <div class="vs-grid">
+        <div class="vs-box yes">
+          <h4>✓ O PzCurr faz</h4>
+          <ul>
+            <li>Criar valores a partir de string, int ou centavos (<code>ofMinor</code>)</li>
+            <li>Somar, subtrair, multiplicar, dividir, módulo</li>
+            <li>Comparar valores (mesma moeda)</li>
+            <li>Arredondar com vários modos (HALF_UP, HALF_EVEN, …)</li>
+            <li>Alterar escala (<code>withScale</code>) — útil em NF-e</li>
+            <li>Dividir valor entre partes (<code>split</code>, <code>allocate</code>) sem perder centavos</li>
+            <li>Formatar para exibição (pt-BR ou locale com intl)</li>
+            <li>Serializar para JSON/array sem float</li>
+            <li>Persistir no Eloquent via <code>PzCurrCast</code></li>
+            <li>Registrar moedas customizadas (cripto, tokens internos)</li>
+          </ul>
+        </div>
+        <div class="vs-box no">
+          <h4>✗ O PzCurr não faz</h4>
+          <ul>
+            <li><strong>Conversão cambial</strong> — não há taxa de câmbio nem USD→BRL automático</li>
+            <li><strong>Operar moedas diferentes</strong> na mesma expressão (lança exceção)</li>
+            <li><strong>Substituir regras fiscais</strong> — ICMS, PIS, tolerâncias SEFAZ são sua responsabilidade</li>
+            <li><strong>Garantir imutabilidade</strong> — o objeto é mutável; use <code>copy()</code> quando precisar</li>
+            <li><strong>Validar XML de NF-e</strong> — só ajuda no cálculo decimal</li>
+            <li>Adapters Brick/MoneyPHP (previstos, ainda caem no BCMath)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- INSTALAÇÃO -->
+    <section id="instalacao">
+      <h2>Instalação</h2>
+<pre><code>composer require puzl/pzcurr</code></pre>
+
+      <h3>Requisitos</h3>
+      <table>
+        <thead>
+          <tr><th>Requisito</th><th>Obrigatório?</th><th>Notas</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>PHP ^8.1</td><td>Sim</td><td></td></tr>
+          <tr><td>ext-bcmath</td><td>Sim</td><td>Toda aritmética depende dela</td></tr>
+          <tr><td>Illuminate ^10|^11|^12</td><td>Não</td><td>Necessário só para Cast e config Laravel</td></tr>
+          <tr><td>ext-intl</td><td>Não</td><td>Formatação por locale (<code>format('pt_BR')</code>)</td></tr>
+        </tbody>
+      </table>
+
+      <p>No Laravel, o <code>PzCurrServiceProvider</code> é descoberto automaticamente. Para publicar a config:</p>
+<pre><code>php artisan vendor:publish --tag=pzcurr-config</code></pre>
+    </section>
+
+    <!-- INÍCIO RÁPIDO -->
+    <section id="inicio-rapido">
+      <h2>Início rápido</h2>
+      <p>Três linhas para o caso mais comum — real brasileiro, sem informar moeda:</p>
+<pre><code><span class="kw">use</span> <span class="cls">Puzl\PzCurr\Factory\PzCurrFactory</span>;
+
+<span class="var">$total</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'25.00'</span>)       <span class="cmt">// = of('25.00', 'BRL')</span>
+    -><span class="fn">add</span>(<span class="str">'4.99'</span>)
+    -><span class="fn">format</span>();
+
+<span class="fn">echo</span> <span class="var">$total</span>;  <span class="cmt">// R$ 29,99</span></code></pre>
+
+      <p>Para ler o valor “cru” (string, nunca float):</p>
+<pre><code><span class="var">$money</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'19.90'</span>, <span class="str">'BRL'</span>);
+
+<span class="var">$money</span>-><span class="fn">getAmount</span>();      <span class="cmt">// '19.90'</span>
+<span class="var">$money</span>-><span class="fn">getMinorAmount</span>(); <span class="cmt">// 1990 (centavos)</span>
+<span class="var">$money</span>-><span class="fn">toArray</span>();        <span class="cmt">// ['amount'=>'19.90','currency'=>'BRL','scale'=>2]</span></code></pre>
+    </section>
+
+    <!-- CONCEITOS -->
+    <section id="conceitos">
+      <h2>Conceitos-chave</h2>
+
+      <h3>1. Amount é sempre string</h3>
+      <p>O valor interno é uma string decimal (<code>'19.90'</code>). Isso é intencional: BCMath opera sobre strings e evita perda de precisão. Use <code>getAmount()</code> ou <code>toDecimal()</code> para persistir ou enviar em APIs.</p>
+
+      <h3>2. Moeda (currency)</h3>
+      <p>Cada instância carrega um código ISO 4217 (ex.: <code>BRL</code>, <code>USD</code>, <code>JPY</code>). Operações entre instâncias exigem a <strong>mesma moeda</strong>; caso contrário, <code>PzCurrencyMismatchException</code>.</p>
+
+      <h3>3. Escala (scale)</h3>
+      <p>Número de casas decimais da instância. BRL usa 2 por padrão; JPY usa 0. Você pode forçar escala maior em <code>of()</code> para cálculos intermediários (ex.: unitário de NF-e com 10 casas).</p>
+
+      <h3>4. Unidade menor (minor)</h3>
+      <p>Centavos para BRL: <code>ofMinor(1990, 'BRL')</code> ≡ <code>of('19.90', 'BRL')</code>. Útil para gateways de pagamento e APIs que trabalham em inteiros.</p>
+
+      <h3>5. Factory → Interface</h3>
+      <p><code>PzCurrFactory::make()</code> devolve <code>PzCurrInterface</code>. O adapter concreto (hoje só BCMath implementado) fica encapsulado.</p>
+    </section>
+
+    <!-- MOEDAS -->
+    <section id="moedas">
+      <h2>Moedas e escala</h2>
+
+      <h3>Enum recomendado</h3>
+<pre><code><span class="kw">use</span> <span class="cls">Puzl\PzCurr\Enum\PzCurrCurrencyEnum</span>;
+<span class="kw">use</span> <span class="cls">Puzl\PzCurr\Factory\PzCurrFactory</span>;
+
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'10.00'</span>, <span class="cls">PzCurrCurrencyEnum</span>::USD);
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'100'</span>, <span class="cls">PzCurrCurrencyEnum</span>::JPY);  <span class="cmt">// escala 0</span></code></pre>
+
+      <p>String continua válida: <code>of('10.00', 'BRL')</code> — necessário para moedas customizadas e reidratação do Cast.</p>
+
+      <h3>Escala explícita</h3>
+<pre><code><span class="cmt">// Escala da moeda (BRL = 2)</span>
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'1.50'</span>);
+
+<span class="cmt">// Escala customizada — prevalece em todas as operações</span>
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'1.1234567'</span>, <span class="cls">PzCurrCurrencyEnum</span>::BRL, scale: <span class="str">7</span>)
+    -><span class="fn">add</span>(<span class="str">'0.0000001'</span>)
+    -><span class="fn">multiply</span>(<span class="str">'2'</span>);
+<span class="cmt">// getAmount() => '2.0000002'</span></code></pre>
+
+      <h3>Moeda customizada</h3>
+<pre><code><span class="kw">use</span> <span class="cls">Puzl\PzCurr\Currency\PzCurrCurrency</span>;
+<span class="kw">use</span> <span class="cls">Puzl\PzCurr\Currency\PzCurrCurrencyRegistry</span>;
+
+<span class="cls">PzCurrCurrencyRegistry</span>::<span class="fn">register</span>(<span class="kw">new</span> <span class="cls">PzCurrCurrency</span>(
+    code: <span class="str">'BTC'</span>,
+    numericCode: <span class="str">0</span>,
+    scale: <span class="str">8</span>,
+    symbol: <span class="str">'₿'</span>,
+));
+
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'0.00000001'</span>, <span class="str">'BTC'</span>);</code></pre>
+
+      <p>O enum <code>PzCurrCurrencyEnum</code> lista dezenas de moedas ISO; metadados (escala, símbolo) vêm do <code>PzCurrCurrencyRegistry</code>.</p>
+    </section>
+
+    <!-- MUTABILIDADE -->
+    <section id="mutabilidade">
+      <h2>Mutabilidade e copy()</h2>
+      <p>Os métodos de operação (<code>add</code>, <code>subtract</code>, etc.) <strong>alteram o objeto atual</strong> e retornam <code>$this</code> para encadeamento. Isso é diferente de bibliotecas imutáveis como Money PHP clássico.</p>
+
+<pre><code><span class="var">$base</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'100.00'</span>, <span class="str">'BRL'</span>);
+
+<span class="var">$comImposto</span> = <span class="var">$base</span>-><span class="fn">copy</span>()-><span class="fn">multiply</span>(<span class="str">'1.1'</span>);   <span class="cmt">// 110.00</span>
+<span class="var">$semImposto</span> = <span class="var">$base</span>-><span class="fn">copy</span>();                  <span class="cmt">// 100.00</span>
+<span class="cmt">// $base continua 100.00</span></code></pre>
+
+      <div class="callout callout-warn">
+        <div class="callout-title">Atenção</div>
+        Se você passar a mesma instância para vários lugares e chamar <code>add()</code> em um deles, todos “enxergam” o valor alterado. Use <code>copy()</code> antes de ramificar cálculos.
+      </div>
+    </section>
+
+    <!-- FLOAT -->
+    <section id="float">
+      <h2>Float e modo STRICT</h2>
+      <p>Por padrão, <code>float</code> é aceito em <code>of</code>, <code>add</code>, <code>multiply</code>, etc., mas convertido para string de forma determinística (<code>number_format</code> na escala da instância). O ideal é sempre usar <strong>string</strong>: <code>'19.90'</code>.</p>
+
+      <div class="callout callout-danger">
+        <div class="callout-title">Nunca use toFloat() em cálculos</div>
+        <code>toFloat()</code> existe só para interoperabilidade ou exibição legada. Para persistir, comparar ou somar, use <code>getAmount()</code> (string) ou <code>getMinorAmount()</code> (int).
+      </div>
+
+      <p>Com <code>PZCURR_STRICT_FLOATS=true</code> (ou <code>strict_floats => true</code> na config), qualquer float lança <code>PzCurrFloatNotAllowedException</code>.</p>
+    </section>
+
+    <!-- CRIAÇÃO -->
+    <section id="criacao">
+      <h2>Criação de valores</h2>
+
+      <div class="method">
+        <div class="method-sig">of(string|int|float $amount, ?currency = null, ?int $scale = null): self</div>
+        <p class="method-desc">Cria a partir do valor decimal. Moeda omitida → BRL. Arredonda para a escala na criação.</p>
+      </div>
+
+      <div class="method">
+        <div class="method-sig">ofMinor(int $minorAmount, ?currency = null): self</div>
+        <p class="method-desc">Cria a partir de centavos (ou unidade menor da moeda). Ex.: <code>ofMinor(1990, 'BRL')</code> → 19,90.</p>
+      </div>
+
+      <div class="method">
+        <div class="method-sig">zero(?currency = null, ?int $scale = null): self</div>
+        <p class="method-desc">Inicializa com zero na moeda informada.</p>
+      </div>
+    </section>
+
+    <!-- ARITMÉTICA -->
+    <section id="aritmetica">
+      <h2>Aritmética</h2>
+
+      <table>
+        <thead>
+          <tr><th>Método</th><th>Descrição</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>add(...$values)</code></td><td>Soma um ou mais valores; arredonda uma vez no final</td></tr>
+          <tr><td><code>subtract(...$values)</code></td><td>Subtrai um ou mais valores</td></tr>
+          <tr><td><code>multiply($factor, $mode?)</code></td><td>Multiplica; modo de arredondamento opcional</td></tr>
+          <tr><td><code>divide($divisor, $mode?)</code></td><td>Divide; lança exceção se divisor for zero</td></tr>
+          <tr><td><code>mod($divisor)</code></td><td>Resto da divisão</td></tr>
+          <tr><td><code>absolute()</code></td><td>Valor absoluto</td></tr>
+          <tr><td><code>negated()</code></td><td>Inverte o sinal</td></tr>
+          <tr><td><code>ratioOf($other)</code></td><td>Proporção deste valor em relação a outro (string)</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Vários operandos de uma vez</h3>
+<pre><code><span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'100.00'</span>, <span class="str">'BRL'</span>)
+    -><span class="fn">subtract</span>(<span class="str">'10.00'</span>, <span class="str">'5.50'</span>, <span class="str">'2.00'</span>);
+<span class="cmt">// getAmount() => '82.50'</span>
+
+<span class="cmt">// Spread de array</span>
+<span class="var">$itens</span> = [<span class="str">'4.99'</span>, <span class="str">'10.00'</span>, <span class="str">'3.50'</span>];
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'0.00'</span>)-><span class="fn">add</span>(...<span class="var">$itens</span>);</code></pre>
+
+      <h3>Exemplo: total de pedido</h3>
+<pre><code><span class="var">$total</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'25.00'</span>, <span class="str">'BRL'</span>)
+    -><span class="fn">add</span>(<span class="str">'4.99'</span>)
+    -><span class="fn">subtract</span>(<span class="str">'2.50'</span>)
+    -><span class="fn">multiply</span>(<span class="str">'2'</span>);
+<span class="cmt">// '54.98'</span></code></pre>
+    </section>
+
+    <!-- COMPARAÇÃO -->
+    <section id="comparacao">
+      <h2>Comparações</h2>
+      <p>Todos aceitam string, int, float ou outra instância PzCurr (mesma moeda).</p>
+
+      <table>
+        <thead>
+          <tr><th>Método</th><th>Retorno</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>compareTo($other)</code></td><td>-1, 0 ou 1</td></tr>
+          <tr><td><code>isEqualTo($other)</code></td><td>bool</td></tr>
+          <tr><td><code>isGreaterThan($other)</code></td><td>bool</td></tr>
+          <tr><td><code>isLessThan($other)</code></td><td>bool</td></tr>
+          <tr><td><code>isZero()</code>, <code>isPositive()</code>, <code>isNegative()</code></td><td>bool</td></tr>
+          <tr><td><code>getSign()</code></td><td>-1, 0 ou 1</td></tr>
+          <tr><td><code>isSameValueAs($other)</code></td><td>bool — compara valor <em>e</em> moeda; retorna false se moedas diferem (sem exceção)</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ARREDONDAMENTO -->
+    <section id="arredondamento">
+      <h2>Arredondamento e escala</h2>
+
+      <div class="method">
+        <div class="method-sig">withScale(int $scale, ?PzCurrRoundingModeEnum $mode = null): self</div>
+        <p class="method-desc">Altera casas decimais com arredondamento. Ex.: reduzir cálculo de 10 casas para 2 no vProd da NF-e.</p>
+      </div>
+
+      <div class="method">
+        <div class="method-sig">withRoundingMode(PzCurrRoundingModeEnum $mode): self</div>
+        <p class="method-desc">Define o modo padrão para operações seguintes.</p>
+      </div>
+
+      <h3>Modos disponíveis</h3>
+      <table>
+        <thead>
+          <tr><th>Modo</th><th>Quando usar</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>HALF_UP</code></td><td>Padrão — preços, impostos, NF-e (SEFAZ)</td></tr>
+          <tr><td><code>HALF_DOWN</code></td><td>Empates .5 em direção a zero</td></tr>
+          <tr><td><code>HALF_EVEN</code></td><td>Banker's rounding — agregações estatísticas</td></tr>
+          <tr><td><code>UP</code> / <code>DOWN</code></td><td>Sempre para cima / truncar</td></tr>
+          <tr><td><code>CEILING</code> / <code>FLOOR</code></td><td>Teto / piso no eixo numérico</td></tr>
+          <tr><td><code>UNNECESSARY</code></td><td>Lança exceção se precisar arredondar</td></tr>
+        </tbody>
+      </table>
+
+<pre><code><span class="kw">use</span> <span class="cls">Puzl\PzCurr\Enum\PzCurrRoundingModeEnum</span>;
+
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'10.00'</span>, <span class="str">'BRL'</span>)
+    -><span class="fn">divide</span>(<span class="str">'3'</span>, <span class="cls">PzCurrRoundingModeEnum</span>::HALF_UP);
+<span class="cmt">// '3.33'</span></code></pre>
+    </section>
+
+    <!-- DISTRIBUIÇÃO -->
+    <section id="distribuicao">
+      <h2>allocate() e split()</h2>
+      <p>Problema clássico: dividir R$ 100,00 entre 3 pessoas. <code>100/3</code> dá 33,33… e a soma das partes não fecha em 100,00.</p>
+      <p>O PzCurr usa o <strong>algoritmo do maior resto</strong>: a soma das partes é <em>sempre</em> igual ao valor original; centavos extras vão para quem tem maior resto fracionário.</p>
+
+<pre><code><span class="var">$dinheiro</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'100.01'</span>, <span class="str">'BRL'</span>);
+<span class="var">$partes</span> = <span class="var">$dinheiro</span>-><span class="fn">split</span>(<span class="str">3</span>);
+<span class="cmt">// Ex.: '33.34', '33.33', '33.34' — soma = 100.01</span>
+
+<span class="cmt">// Proporções customizadas (ex.: 70% / 30%)</span>
+<span class="var">$partes</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'0.05'</span>, <span class="str">'BRL'</span>)
+    -><span class="fn">allocate</span>([<span class="str">7</span>, <span class="str">3</span>]);</code></pre>
+
+      <p>Cada parte retornada é uma <strong>cópia independente</strong> (<code>copy()</code> interno). Mutar uma parte não afeta as outras.</p>
+    </section>
+
+    <!-- SAÍDA -->
+    <section id="saida">
+      <h2>Saída e formatação</h2>
+
+      <table>
+        <thead>
+          <tr><th>Método</th><th>Retorno</th><th>Uso</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>getAmount()</code> / <code>toDecimal()</code></td><td>string</td><td>Persistência, APIs, cálculos</td></tr>
+          <tr><td><code>getMinorAmount()</code></td><td>int</td><td>Centavos, Stripe-like APIs</td></tr>
+          <tr><td><code>format(?$locale)</code></td><td>string</td><td>Exibição humana</td></tr>
+          <tr><td><code>toArray()</code> / <code>jsonSerialize()</code></td><td>array</td><td>JSON, logs, filas</td></tr>
+          <tr><td><code>toFloat()</code></td><td>float</td><td>⚠ Só exibição legada — evite</td></tr>
+        </tbody>
+      </table>
+
+<pre><code><span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'1234.56'</span>, <span class="str">'BRL'</span>)-><span class="fn">format</span>();
+<span class="cmt">// 'R$ 1.234,56' (separadores da config)</span>
+
+<span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'99.99'</span>, <span class="str">'USD'</span>)-><span class="fn">format</span>(<span class="str">'en_US'</span>);
+<span class="cmt">// Requer ext-intl</span></code></pre>
+    </section>
+
+    <!-- LARAVEL -->
+    <section id="laravel">
+      <h2>Integração Laravel</h2>
+
+      <h3>Eloquent Cast</h3>
+      <p>O <code>PzCurrCast</code> persiste em <strong>duas colunas</strong> — nunca em um único decimal float:</p>
+
+<pre><code><span class="cmt">// Migration</span>
+<span class="var">$table</span>-><span class="fn">decimal</span>(<span class="str">'price_amount'</span>, <span class="str">20</span>, <span class="str">8</span>);
+<span class="var">$table</span>-><span class="fn">char</span>(<span class="str">'price_currency'</span>, <span class="str">3</span>);
+
+<span class="cmt">// Model</span>
+<span class="kw">protected</span> <span class="var">$casts</span> = [
+    <span class="str">'price'</span> => <span class="cls">PzCurrCast</span>::<span class="kw">class</span>,
+];
+
+<span class="cmt">// Uso</span>
+<span class="var">$order</span>->price = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()-><span class="fn">of</span>(<span class="str">'19.90'</span>, <span class="str">'BRL'</span>);
+<span class="var">$order</span>-><span class="fn">save</span>();
+<span class="cmt">// price_amount = '19.90', price_currency = 'BRL'</span>
+
+<span class="var">$order</span> = Order::<span class="fn">find</span>(<span class="str">1</span>);
+<span class="fn">echo</span> <span class="var">$order</span>->price-><span class="fn">format</span>();  <span class="cmt">// R$ 19,90</span></code></pre>
+
+      <div class="callout callout-success">
+        <div class="callout-title">Zero float no caminho de persistência</div>
+        O Cast grava e lê strings. Nenhuma conversão para <code>float</code> ocorre no <code>get</code>/<code>set</code>.
+      </div>
+    </section>
+
+    <!-- CONFIG -->
+    <section id="config">
+      <h2>Configuração</h2>
+      <p>Arquivo <code>config/pzcurr.php</code> (publicável):</p>
+
+      <table>
+        <thead>
+          <tr><th>Chave</th><th>Env</th><th>Padrão</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>adapter</code></td><td><code>PZCURR_ADAPTER</code></td><td>BCMATH</td></tr>
+          <tr><td><code>default_currency</code></td><td><code>PZCURR_DEFAULT_CURRENCY</code></td><td>BRL</td></tr>
+          <tr><td><code>rounding_mode</code></td><td><code>PZCURR_ROUNDING_MODE</code></td><td>HALF_UP</td></tr>
+          <tr><td><code>strict_floats</code></td><td><code>PZCURR_STRICT_FLOATS</code></td><td>false</td></tr>
+          <tr><td><code>formatting.*</code></td><td>—</td><td>pt-BR (., separadores)</td></tr>
+        </tbody>
+      </table>
+
+<pre><code><span class="kw">return</span> [
+    <span class="str">'adapter'</span>          => <span class="fn">env</span>(<span class="str">'PZCURR_ADAPTER'</span>, <span class="str">'BCMATH'</span>),
+    <span class="str">'default_currency'</span> => <span class="fn">env</span>(<span class="str">'PZCURR_DEFAULT_CURRENCY'</span>, <span class="str">'BRL'</span>),
+    <span class="str">'rounding_mode'</span>    => <span class="fn">env</span>(<span class="str">'PZCURR_ROUNDING_MODE'</span>, <span class="str">'HALF_UP'</span>),
+    <span class="str">'strict_floats'</span>    => <span class="fn">env</span>(<span class="str">'PZCURR_STRICT_FLOATS'</span>, <span class="kw">false</span>),
+    <span class="str">'formatting'</span> => [
+        <span class="str">'thousands_separator'</span> => <span class="str">'.'</span>,
+        <span class="str">'decimal_separator'</span>   => <span class="str">','</span>,
+        <span class="str">'symbol_before'</span>       => <span class="kw">true</span>,
+    ],
+];</code></pre>
+    </section>
+
+    <!-- EXCEÇÕES -->
+    <section id="excecoes">
+      <h2>Exceções</h2>
+      <p>Todas estendem <code>PzCurrException</code> (RuntimeException):</p>
+
+      <table>
+        <thead>
+          <tr><th>Exceção</th><th>Quando ocorre</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>PzCurrInvalidAmountException</code></td><td>Valor não numérico, overflow em getMinorAmount()</td></tr>
+          <tr><td><code>PzCurrInvalidCurrencyException</code></td><td>Código ISO desconhecido</td></tr>
+          <tr><td><code>PzCurrencyMismatchException</code></td><td>Operação entre moedas diferentes</td></tr>
+          <tr><td><code>PzCurrDivisionByZeroException</code></td><td>Divisão ou mod por zero; ratios zerados em allocate</td></tr>
+          <tr><td><code>PzCurrFloatNotAllowedException</code></td><td>Float com modo STRICT ativo</td></tr>
+          <tr><td><code>PzCurrInvalidScaleException</code></td><td>Escala negativa</td></tr>
+          <tr><td><code>PzCurrRoundingNecessaryException</code></td><td>Modo UNNECESSARY e valor não cabe na escala</td></tr>
+          <tr><td><code>PzCurrMissingExtensionException</code></td><td>ext-bcmath ausente</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- NF-e -->
+    <section id="nfe">
+      <h2>NF-e e NFC-e</h2>
+      <p>Em notas fiscais eletrônicas, campos como <code>vUnCom</code> aceitam até <strong>10 casas decimais</strong>, <code>qCom</code> até <strong>4</strong>, mas <code>vProd</code> deve ter <strong>exatamente 2</strong>. A SEFAZ valida com tolerância de R$ 0,01 e arredondamento <strong>HALF_UP</strong>.</p>
+
+<pre><code><span class="var">$vProd</span> = <span class="fn">PzCurrFactory</span>::<span class="fn">make</span>()
+    -><span class="fn">of</span>(<span class="str">'1.0640000000'</span>, <span class="cls">PzCurrCurrencyEnum</span>::BRL, scale: <span class="str">10</span>)
+    -><span class="fn">multiply</span>(<span class="str">'39680.1234'</span>)
+    -><span class="fn">withScale</span>(<span class="str">2</span>);
+
+<span class="fn">echo</span> <span class="var">$vProd</span>-><span class="fn">getAmount</span>();  <span class="cmt">// '42219.65'</span></code></pre>
+
+      <p>Consulte também o documento interno <code>NFE-NFCE-CASAS-DECIMAIS-ARREDONDAMENTO.md</code> no repositório para regras detalhadas de validação SEFAZ.</p>
+    </section>
+
+    <!-- BOAS PRÁTICAS -->
+    <section id="boas-praticas">
+      <h2>Boas práticas</h2>
+      <ol>
+        <li><strong>Use strings</strong> para valores monetários: <code>'19.90'</code>, não <code>19.90</code>.</li>
+        <li><strong>Ative STRICT em produção</strong> se quiser garantir que ninguém passe float acidentalmente.</li>
+        <li><strong>Use copy()</strong> antes de ramificar cálculos a partir do mesmo objeto.</li>
+        <li><strong>Persista amount + currency</strong> — nunca um único campo float/decimal sem moeda.</li>
+        <li><strong>getAmount() para banco e API</strong>; <code>format()</code> só para UI.</li>
+        <li><strong>withScale(2)</strong> no final de pipelines NF-e, após multiplicações com escala alta.</li>
+        <li><strong>allocate/split</strong> para rateios — não faça <code>valor / n</code> manual em float.</li>
+        <li>Dependa de <code>PzCurrInterface</code>, não de <code>PzCurrBcMath</code> diretamente.</li>
+      </ol>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2>Perguntas frequentes</h2>
+
+      <h3>PzCurr substitui Money PHP ou Brick Money?</h3>
+      <p>Não diretamente. É uma biblioteca própria da Puzl, focada em BCMath + Laravel. Adapters MoneyPHP/Brick estão previstos mas hoje fazem fallback silencioso para BCMath.</p>
+
+      <h3>Posso usar sem Laravel?</h3>
+      <p>Sim. Instancie via <code>PzCurrFactory::make()</code> ou <code>new PzCurrBcMath()</code>. Config e Cast são opcionais.</p>
+
+      <h3>Por que o objeto é mutável?</h3>
+      <p>API fluente e menor alocação em encadeamentos longos. Imutabilidade é opt-in via <code>copy()</code>.</p>
+
+      <h3>Como testar?</h3>
+<pre><code>./vendor/bin/phpunit</code></pre>
+      <p>No ambiente Laradock do projeto, execute dentro do container <code>laradock-workspace-1</code>.</p>
+
+      <h3>Onde está o código-fonte?</h3>
+      <p>
+        <code>src/Contract/PzCurrInterface.php</code> — contrato público<br>
+        <code>src/Factory/PzCurrFactory.php</code> — entrada<br>
+        <code>src/Adapter/BcMath/PzCurrBcMath.php</code> — implementação<br>
+        <code>README.md</code> — referência rápida em Markdown
+      </p>
+    </section>
+
+    <footer>
+      <p>PzCurr · <code>puzl/pzcurr</code> · Documentação gerada para o repositório Puzl. Abra este arquivo no navegador: <code>docs/index.html</code></p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('.sidebar a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // Close mobile menu on link click
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelector('.sidebar').classList.remove('open');
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -14,12 +14,12 @@ use Puzl\PzCurr\Exception\PzCurrencyMismatchException;
 final class PzCurrBcMathArithmeticTest extends TestCase
 {
     // -------------------------------------------------------------------------
-    // Precision: no float issues
+    // Precisão: sem problemas de float
     // -------------------------------------------------------------------------
 
     public function test_add_classic_float_precision_issue(): void
     {
-        // 0.1 + 0.2 would be 0.30000000000000004 in float arithmetic
+        // 0.1 + 0.2 seria 0.30000000000000004 em aritmética float
         $m = (new PzCurrBcMath())->of('0.1', 'BRL')->add('0.2');
 
         $this->assertSame('0.30', $m->getAmount());
@@ -29,7 +29,7 @@ final class PzCurrBcMathArithmeticTest extends TestCase
     {
         $m = (new PzCurrBcMath())->of('0.1', 'BRL')->add('0.2');
 
-        // Confirm it is exactly the string '0.30', not a float representation
+        // Confirma string exata '0.30', não representação float
         $this->assertIsString($m->getAmount());
         $this->assertSame('0.30', $m->getAmount());
     }
@@ -368,7 +368,7 @@ final class PzCurrBcMathArithmeticTest extends TestCase
 
         $ratio = $a->ratioOf($b);
 
-        // Working scale = currency scale (2) + margin (10) = 12 decimal places
+        // Escala de trabalho = escala da moeda (2) + margem (10) = 12 casas decimais
         $this->assertIsString($ratio);
         $this->assertSame('0.250000000000', $ratio);
     }
@@ -398,17 +398,16 @@ final class PzCurrBcMathArithmeticTest extends TestCase
     {
         $m = (new PzCurrBcMath())->of('1.235', 'BRL')->withScale(2);
 
-        // HALF_UP at scale 2: 1.235 → 1.24
+        // HALF_UP na escala 2: 1.235 → 1.24
         $this->assertSame('1.24', $m->getAmount());
         $this->assertSame(2, $m->getScale());
     }
 
     public function test_with_scale_accepts_explicit_mode(): void
     {
-        // Increase scale to 4, add a value with 4 decimals that would round
-        // differently depending on the mode, then reduce back to 2.
-        // 1.00 + 0.2359 = 1.2359 at scale=4
-        // guide digit = 5, so: HALF_UP → '1.24', DOWN → '1.23'
+        // Aumenta escala para 4, adiciona valor que arredondaria diferente conforme o modo.
+        // 1.00 + 0.2359 = 1.2359 na escala=4
+        // Dígito guia = 5: HALF_UP → '1.24', DOWN → '1.23'
         $m = (new PzCurrBcMath())
             ->of('1.00', 'BRL')
             ->withScale(4)
@@ -427,7 +426,7 @@ final class PzCurrBcMathArithmeticTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Fluent chaining
+    // Encadeamento fluente
     // -------------------------------------------------------------------------
 
     public function test_fluent_chain_order_calculation(): void
@@ -461,7 +460,7 @@ final class PzCurrBcMathArithmeticTest extends TestCase
             ->withRoundingMode(PzCurrRoundingModeEnum::DOWN)
             ->divide(3);
 
-        // HALF_DOWN: 3.333... → 3.33 (truncate)
+        // HALF_DOWN: 3.333... → 3.33 (trunca)
         $this->assertSame('3.33', $m->getAmount());
     }
 }

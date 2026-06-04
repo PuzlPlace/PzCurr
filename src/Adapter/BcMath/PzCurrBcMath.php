@@ -18,21 +18,22 @@ use Puzl\PzCurr\Support\PzCurrFormatter;
 use Puzl\PzCurr\Support\PzCurrRoundingHelper;
 
 /**
- * BCMath adapter — all arithmetic is performed via bc* functions on string
- * representations, ensuring zero float conversions at every stage.
+ * Adapter BCMath — toda aritmética usa funções bc* sobre strings,
+ * sem conversão para float em nenhuma etapa.
  *
- * workingScale() strategy: intermediate bc* calls use (currency scale + MARGIN)
- * extra digits of precision. The result is then reduced to the target scale via
- * PzCurrRoundingHelper as a single, explicit rounding step per operation.
+ * Estratégia workingScale(): operações intermediárias usam (escala da moeda + MARGEM)
+ * dígitos extras. O resultado é reduzido à escala alvo via PzCurrRoundingHelper
+ * em um único arredondamento explícito por operação.
  */
 final class PzCurrBcMath extends PzCurrBase
 {
-    /** Extra digits kept during intermediate calculations to avoid precision loss. */
+    /** Dígitos extras nas operações intermediárias para evitar perda de precisão. */
     private const WORKING_SCALE_MARGIN = 10;
 
-    /** Accepts optional sign, integer digits, optional dot-separated decimal digits. */
+    /** Aceita sinal opcional, dígitos inteiros e decimais separados por ponto. */
     private const NUMERIC_PATTERN = '/^-?\d+(\.\d+)?$/';
 
+    /** @throws PzCurrMissingExtensionException quando bcmath não está carregada. */
     public function __construct(
         ?PzCurrRoundingModeEnum $defaultMode = null,
         private readonly bool $strictFloats = false,
@@ -45,27 +46,23 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     // -------------------------------------------------------------------------
-    // Working scale
+    // Escala de trabalho
     // -------------------------------------------------------------------------
 
-    /**
-     * Scale used for intermediate bc* operations.
-     * Adds a fixed margin so that no precision is silently dropped before the
-     * explicit rounding step at the end of each operation.
-     */
+    /** Escala usada nas operações bc* intermediárias (escala atual + margem). */
     private function workingScale(): int
     {
         return $this->scale + self::WORKING_SCALE_MARGIN;
     }
 
     // -------------------------------------------------------------------------
-    // Input validation
+    // Validação de entrada
     // -------------------------------------------------------------------------
 
     /**
-     * Validates that $value is a well-formed numeric string and returns it.
+     * Valida string numérica bem formada.
      *
-     * @throws PzCurrInvalidAmountException for non-numeric input.
+     * @throws PzCurrInvalidAmountException para entrada não numérica.
      */
     private function assertNumericString(string $value): string
     {
@@ -100,11 +97,9 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     /**
-     * Converte um float para string decimal de forma determinística e sem notação científica.
+     * Converte float para string decimal determinística, sem notação científica.
      *
-     * Usa number_format com a escala atual da instância e separador decimal '.' (locale-safe).
-     * O float já chega com a imprecisão inerente do IEEE 754; arredondar para a escala do
-     * objeto produz o resultado previsível e adequado ao domínio (a escala manda).
+     * Usa number_format com a escala atual e separador '.' (independente de locale).
      */
     private function floatToString(float $value): string
     {
@@ -112,11 +107,9 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     /**
-     * Resolves a variadic operand to its string representation.
+     * Resolve operando variádico para string.
      *
-     * When the operand is a PzCurrInterface instance, currency compatibility is
-     * validated via assertSameCurrency() before extracting the amount string.
-     * Plain string/int/float operands are normalized (float respeita o modo STRICT).
+     * Instâncias PzCurrInterface passam por assertSameCurrency() antes da extração.
      */
     private function operandToString(PzCurrInterface|string|int|float $value): string
     {
@@ -130,10 +123,9 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     /**
-     * Guards against division/modulo by zero, raising a typed PzCurr exception
-     * instead of leaking PHP's native DivisionByZeroError.
+     * Impede divisão/módulo por zero com exceção tipada do pacote.
      *
-     * @throws PzCurrDivisionByZeroException when $value is numerically zero.
+     * @throws PzCurrDivisionByZeroException quando $value é numericamente zero.
      */
     private function assertNonZero(string $value, string $operation): void
     {
@@ -143,9 +135,10 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     // -------------------------------------------------------------------------
-    // Creation — RF-01
+    // Criação — RF-01
     // -------------------------------------------------------------------------
 
+    /** Inicializa valor a partir de amount decimal, moeda e escala opcionais. */
     public function of(string|int|float $amount, PzCurrCurrencyEnum|string|null $currency = null, ?int $scale = null): self
     {
         $this->currency = PzCurrCurrencyRegistry::of($this->resolveCurrencyCode($currency));
@@ -162,6 +155,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Inicializa a partir do valor em unidade menor (centavos). */
     public function ofMinor(int $minorAmount, PzCurrCurrencyEnum|string|null $currency = null): self
     {
         $this->currency = PzCurrCurrencyRegistry::of($this->resolveCurrencyCode($currency));
@@ -172,19 +166,17 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Inicializa com zero na moeda informada. */
     public function zero(PzCurrCurrencyEnum|string|null $currency = null, ?int $scale = null): self
     {
         return $this->of('0', $currency, $scale);
     }
 
     // -------------------------------------------------------------------------
-    // Arithmetic — RF-02
+    // Aritmética — RF-02
     // -------------------------------------------------------------------------
 
-    /**
-     * Adds one or more values using bcadd, accumulating at working scale.
-     * A single rounding step is applied after the full loop.
-     */
+    /** Soma valores via bcadd na escala de trabalho; arredonda ao final. */
     public function add(PzCurrInterface|string|int|float ...$values): self
     {
         foreach ($values as $v) {
@@ -197,10 +189,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
-    /**
-     * Subtracts one or more values using bcsub, accumulating at working scale.
-     * A single rounding step is applied after the full loop.
-     */
+    /** Subtrai valores via bcsub na escala de trabalho; arredonda ao final. */
     public function subtract(PzCurrInterface|string|int|float ...$values): self
     {
         foreach ($values as $v) {
@@ -213,6 +202,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Multiplica pelo fator informado, com arredondamento opcional. */
     public function multiply(string|int|float $factor, ?PzCurrRoundingModeEnum $mode = null): self
     {
         $validated    = $this->scalarToString($factor);
@@ -222,6 +212,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Divide pelo divisor informado, com arredondamento opcional. */
     public function divide(string|int|float $divisor, ?PzCurrRoundingModeEnum $mode = null): self
     {
         $validated = $this->scalarToString($divisor);
@@ -233,6 +224,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Retorna o resto da divisão pelo divisor. */
     public function mod(string|int|float $divisor): self
     {
         $validated = $this->scalarToString($divisor);
@@ -243,6 +235,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Transforma o valor em absoluto. */
     public function absolute(): self
     {
         if (bccomp($this->amount, '0', $this->scale) < 0) {
@@ -252,6 +245,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
+    /** Nega o sinal do valor. */
     public function negated(): self
     {
         $this->amount = bcmul($this->amount, '-1', $this->scale);
@@ -259,10 +253,7 @@ final class PzCurrBcMath extends PzCurrBase
         return $this;
     }
 
-    /**
-     * Returns the ratio of $this to $other as a high-precision decimal string.
-     * Uses working scale to maximise available digits.
-     */
+    /** Retorna a proporção deste valor em relação a $other como string decimal. */
     public function ratioOf(PzCurrInterface $other): string
     {
         $this->assertSameCurrency($other);
@@ -272,9 +263,10 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     // -------------------------------------------------------------------------
-    // Scale / rounding — RF-03
+    // Escala / arredondamento — RF-03
     // -------------------------------------------------------------------------
 
+    /** Altera a escala com arredondamento opcional. */
     public function withScale(int $scale, ?PzCurrRoundingModeEnum $mode = null): self
     {
         $this->assertValidScale($scale);
@@ -286,9 +278,10 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     // -------------------------------------------------------------------------
-    // Comparisons / sign — RF-04
+    // Comparações / sinal — RF-04
     // -------------------------------------------------------------------------
 
+    /** Compara com outro valor; retorna -1, 0 ou 1. */
     public function compareTo(PzCurrInterface|string|int|float $other): int
     {
         $operand = $this->operandToString($other);
@@ -296,64 +289,75 @@ final class PzCurrBcMath extends PzCurrBase
         return bccomp($this->amount, $operand, $this->workingScale());
     }
 
+    /** Verifica igualdade numérica. */
     public function isEqualTo(PzCurrInterface|string|int|float $other): bool
     {
         return $this->compareTo($other) === 0;
     }
 
+    /** Verifica se é maior que o outro valor. */
     public function isGreaterThan(PzCurrInterface|string|int|float $other): bool
     {
         return $this->compareTo($other) > 0;
     }
 
+    /** Verifica se é maior ou igual ao outro valor. */
     public function isGreaterThanOrEqualTo(PzCurrInterface|string|int|float $other): bool
     {
         return $this->compareTo($other) >= 0;
     }
 
+    /** Verifica se é menor que o outro valor. */
     public function isLessThan(PzCurrInterface|string|int|float $other): bool
     {
         return $this->compareTo($other) < 0;
     }
 
+    /** Verifica se é menor ou igual ao outro valor. */
     public function isLessThanOrEqualTo(PzCurrInterface|string|int|float $other): bool
     {
         return $this->compareTo($other) <= 0;
     }
 
+    /** Verifica se o valor é zero. */
     public function isZero(): bool
     {
         return bccomp($this->amount, '0', $this->scale) === 0;
     }
 
+    /** Verifica se o valor é estritamente positivo. */
     public function isPositive(): bool
     {
         return $this->getSign() > 0;
     }
 
+    /** Verifica se o valor é positivo ou zero. */
     public function isPositiveOrZero(): bool
     {
         return $this->getSign() >= 0;
     }
 
+    /** Verifica se o valor é estritamente negativo. */
     public function isNegative(): bool
     {
         return $this->getSign() < 0;
     }
 
+    /** Verifica se o valor é negativo ou zero. */
     public function isNegativeOrZero(): bool
     {
         return $this->getSign() <= 0;
     }
 
+    /** Retorna -1, 0 ou 1 representando o sinal do valor. */
     public function getSign(): int
     {
         return bccomp($this->amount, '0', $this->scale);
     }
 
     /**
-     * Compares value and currency without throwing PzCurrencyMismatchException.
-     * Returns false when currencies differ.
+     * Compara valor e moeda sem lançar PzCurrencyMismatchException.
+     * Retorna false quando as moedas diferem.
      */
     public function isSameValueAs(PzCurrInterface $other): bool
     {
@@ -362,16 +366,16 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     // -------------------------------------------------------------------------
-    // Extraction — partial implementation (full output in Task 6.0)
+    // Extração — RF-06
     // -------------------------------------------------------------------------
 
+    /** Retorna o valor em unidade menor (centavos) como inteiro. */
     public function getMinorAmount(): int
     {
         $multiplier = bcpow('10', (string) $this->scale);
         $minor      = bcmul($this->amount, $multiplier, 0);
 
-        // Guard against silent int overflow: bcmul keeps arbitrary precision as a
-        // string, but casting beyond PHP_INT_MAX/MIN would yield a garbage value.
+        // Evita overflow silencioso ao converter string grande para int.
         if (bccomp($minor, (string) PHP_INT_MAX, 0) > 0
             || bccomp($minor, (string) PHP_INT_MIN, 0) < 0) {
             throw PzCurrInvalidAmountException::minorAmountOverflow($minor);
@@ -381,7 +385,7 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     // -------------------------------------------------------------------------
-    // Not yet implemented — deferred to future tasks
+    // Distribuição / formatação
     // -------------------------------------------------------------------------
 
     /** @param array<int|string, int|float|string> $ratios @return array<int|string, self> */
@@ -401,22 +405,17 @@ final class PzCurrBcMath extends PzCurrBase
     }
 
     /**
-     * Formats the monetary value for human display, delegating to PzCurrFormatter.
+     * Formata o valor para exibição humana via PzCurrFormatter.
      *
-     * When $locale is provided and the intl extension is available, locale-aware
-     * formatting is used. Otherwise, manual mode applies using separators and symbol
-     * position read from `config('pzcurr.formatting')` when available, falling back
-     * to pt-BR defaults (e.g. 'R$ 1.234,56').
+     * Com $locale e extensão intl, usa formatação por locale; caso contrário,
+     * aplica separadores e símbolo de config('pzcurr.formatting') ou padrão pt-BR.
      */
     public function format(?string $locale = null): string
     {
         return self::buildFormatter()->format($this->amount, $this->getCurrency(), $locale);
     }
 
-    /**
-     * Builds a PzCurrFormatter using formatting options from config when available.
-     * Falls back gracefully to pt-BR defaults outside of a Laravel context.
-     */
+    /** Monta PzCurrFormatter a partir de config ou defaults pt-BR. */
     private static function buildFormatter(): PzCurrFormatter
     {
         if (!function_exists('config')) {

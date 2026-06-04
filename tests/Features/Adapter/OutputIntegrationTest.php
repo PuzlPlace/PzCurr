@@ -8,13 +8,13 @@ use PHPUnit\Framework\TestCase;
 use Puzl\PzCurr\Adapter\BcMath\PzCurrBcMath;
 
 /**
- * Integration tests for the output layer: format() + serialize() after a chain
- * of arithmetic operations.
+ * Testes de integração da camada de saída: format() e serialização após
+ * cadeia de operações aritméticas.
  */
 final class OutputIntegrationTest extends TestCase
 {
     // -------------------------------------------------------------------------
-    // Full pipeline: arithmetic → format
+    // Pipeline completo: aritmética → format()
     // -------------------------------------------------------------------------
 
     public function test_format_after_arithmetic_pipeline(): void
@@ -51,7 +51,7 @@ final class OutputIntegrationTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Serialization round-trip
+    // Round-trip de serialização
     // -------------------------------------------------------------------------
 
     public function test_json_round_trip_after_arithmetic(): void
@@ -93,7 +93,7 @@ final class OutputIntegrationTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // getMinorAmount after arithmetic
+    // getMinorAmount após aritmética
     // -------------------------------------------------------------------------
 
     public function test_get_minor_amount_after_arithmetic(): void
@@ -118,7 +118,7 @@ final class OutputIntegrationTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // JPY pipeline (scale=0)
+    // Pipeline JPY (escala=0)
     // -------------------------------------------------------------------------
 
     public function test_jpy_pipeline_format_and_serialize(): void

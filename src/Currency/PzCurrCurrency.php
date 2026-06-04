@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Puzl\PzCurr\Currency;
 
+/** Value object imutável com metadados de uma moeda (código, escala, símbolo). */
 final class PzCurrCurrency
 {
     public function __construct(

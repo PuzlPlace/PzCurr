@@ -11,7 +11,7 @@ use Puzl\PzCurr\Support\PzCurrFormatter;
 final class PzCurrFormatterTest extends TestCase
 {
     // -------------------------------------------------------------------------
-    // Manual pt-BR formatting
+    // Formatação manual pt-BR
     // -------------------------------------------------------------------------
 
     public function test_format_brl_manual_with_thousands(): void
@@ -65,7 +65,7 @@ final class PzCurrFormatterTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // JPY — scale 0 (no decimal part)
+    // JPY — escala 0 (sem parte decimal)
     // -------------------------------------------------------------------------
 
     public function test_format_jpy_scale_zero(): void
@@ -89,16 +89,16 @@ final class PzCurrFormatterTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Graceful degradation — simulated intl absence
+    // Degradação graciosa — intl ausente simulado
     // -------------------------------------------------------------------------
 
     public function test_format_falls_back_to_manual_when_intl_unavailable(): void
     {
-        // Inject intlAvailable=false to simulate ext-intl not being loaded.
+        // intlAvailable=false simula ext-intl não carregada.
         $formatter = new PzCurrFormatter(intlAvailable: false);
         $currency  = PzCurrCurrencyRegistry::of('BRL');
 
-        // Even with a locale, the formatter must produce the manual output.
+        // Mesmo com locale, deve produzir saída manual.
         $result = $formatter->format('1234.56', $currency, 'pt_BR');
 
         $this->assertSame('R$ 1.234,56', $result);
@@ -115,12 +115,12 @@ final class PzCurrFormatterTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Configurable separators
+    // Separadores configuráveis
     // -------------------------------------------------------------------------
 
     public function test_format_custom_separators(): void
     {
-        // US-style: thousands=',', decimal='.'
+        // Estilo US: milhares=',', decimal='.'
         $formatter = new PzCurrFormatter(
             thousandsSeparator: ',',
             decimalSeparator: '.',
@@ -144,7 +144,7 @@ final class PzCurrFormatterTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Edge cases — thousands separator boundaries
+    // Casos limite — fronteiras do separador de milhares
     // -------------------------------------------------------------------------
 
     public function test_format_exactly_three_integer_digits(): void

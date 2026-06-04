@@ -8,30 +8,17 @@ use Puzl\PzCurr\Enum\PzCurrRoundingModeEnum;
 use Puzl\PzCurr\Exception\PzCurrRoundingNecessaryException;
 
 /**
- * Rounding helper for decimal string values.
+ * Helper de arredondamento para strings decimais.
  *
- * Strategy: all logic operates on the string representation of the number.
- * No casts to float are performed at any stage.
- *
- * Algorithm overview:
- *  1. Parse sign, integer part, and decimal part from the input string.
- *  2. If the decimal part is already within the target scale, return as-is.
- *  3. Extract the "guide digit" — the first digit beyond the target scale —
- *     and check whether any subsequent digit is non-zero.
- *  4. Build the "truncated" value (toward zero) and, when needed, the
- *     "rounded-up" value (away from zero) via bcadd/bcsub of 1 ULP
- *     (unit in the last place, e.g. 0.01 for scale=2).
- *  5. Apply the rounding decision based on the mode, the guide digit,
- *     the sign, and (for HALF_EVEN) the parity of the last kept digit.
- *
- * Compatible with PHP 8.1+ (does not use bcround, available only in PHP 8.4+).
+ * Toda a lógica opera sobre a representação string, sem cast para float.
+ * Compatível com PHP 8.1+ (não usa bcround, disponível apenas no PHP 8.4+).
  */
 final class PzCurrRoundingHelper
 {
     /**
-     * Rounds the decimal string $amount to $scale decimal places using $mode.
+     * Arredonda a string decimal $amount para $scale casas usando $mode.
      *
-     * @throws PzCurrRoundingNecessaryException when $mode is UNNECESSARY and rounding would be required.
+     * @throws PzCurrRoundingNecessaryException quando $mode é UNNECESSARY e arredondamento seria necessário.
      */
     public static function round(
         string $amount,
@@ -48,7 +35,7 @@ final class PzCurrRoundingHelper
             $decPart = '';
         }
 
-        // Already within target scale — no rounding required.
+        // Já cabe na escala alvo — sem arredondamento.
         if (strlen($decPart) <= $scale) {
             return $amount;
         }
@@ -66,16 +53,16 @@ final class PzCurrRoundingHelper
             return $truncated;
         }
 
-        // No non-zero excess beyond the scale; truncation is exact.
+        // Sem excesso além da escala; truncamento é exato.
         if (!$hasNonZeroExcess) {
             return $truncated;
         }
 
-        // Unit in the last place for the target scale.
+        // Unidade na última casa da escala alvo (ULP).
         $ulp    = $scale > 0 ? '0.' . str_repeat('0', $scale - 1) . '1' : '1';
         $addend = $negative ? '-' . $ulp : $ulp;
 
-        // Value rounded away from zero by exactly 1 ULP.
+        // Valor arredondado uma ULP para longe de zero.
         $roundedUp = bcadd($truncated, $addend, $scale);
 
         return match ($mode) {
@@ -83,16 +70,16 @@ final class PzCurrRoundingHelper
 
             PzCurrRoundingModeEnum::UP => $roundedUp,
 
-            // CEILING: toward +∞. Positive values round up; negative values truncate.
+            // CEILING: em direção a +∞. Positivos sobem; negativos truncam.
             PzCurrRoundingModeEnum::CEILING => $negative ? $truncated : $roundedUp,
 
-            // FLOOR: toward −∞. Negative values round away from zero; positive truncate.
+            // FLOOR: em direção a −∞. Negativos descem; positivos truncam.
             PzCurrRoundingModeEnum::FLOOR => $negative ? $roundedUp : $truncated,
 
-            // HALF_UP: ties go away from zero.
+            // HALF_UP: empates vão para longe de zero.
             PzCurrRoundingModeEnum::HALF_UP => $guideDigit >= 5 ? $roundedUp : $truncated,
 
-            // HALF_DOWN: ties go toward zero.
+            // HALF_DOWN: empates vão em direção a zero.
             PzCurrRoundingModeEnum::HALF_DOWN => (
                 $guideDigit > 5 || ($guideDigit === 5 && ltrim($remainder, '0') !== '')
             ) ? $roundedUp : $truncated,
@@ -107,14 +94,12 @@ final class PzCurrRoundingHelper
                 $scale,
             ),
 
-            // UNNECESSARY is fully handled above; this branch is unreachable.
+            // UNNECESSARY já tratado acima; ramo inalcançável.
             PzCurrRoundingModeEnum::UNNECESSARY => $truncated,
         };
     }
 
-    /**
-     * Returns the value truncated toward zero at the given scale.
-     */
+    /** Retorna o valor truncado em direção a zero na escala informada. */
     private static function buildTruncated(
         bool $negative,
         string $intPart,
@@ -136,9 +121,7 @@ final class PzCurrRoundingHelper
         return $sign . $intPart . '.' . $kept;
     }
 
-    /**
-     * HALF_EVEN (banker's rounding): when exactly halfway, round to even last digit.
-     */
+    /** HALF_EVEN (banker's rounding): no meio exato, arredonda para dígito par. */
     private static function applyHalfEven(
         string $truncated,
         string $roundedUp,
@@ -148,17 +131,17 @@ final class PzCurrRoundingHelper
         string $decPart,
         int $scale,
     ): string {
-        // More than half: always round away from zero.
+        // Mais da metade: sempre arredonda para longe de zero.
         if ($guideDigit > 5 || ($guideDigit === 5 && ltrim($remainder, '0') !== '')) {
             return $roundedUp;
         }
 
-        // Less than half: always truncate.
+        // Menos da metade: sempre trunca.
         if ($guideDigit < 5) {
             return $truncated;
         }
 
-        // Exactly half: round to even (last kept digit must be even).
+        // Exatamente na metade: arredonda para par (último dígito mantido deve ser par).
         if ($scale === 0) {
             $lastKeptDigit = (int) (strlen($intPart) > 0 ? $intPart[-1] : '0');
         } else {

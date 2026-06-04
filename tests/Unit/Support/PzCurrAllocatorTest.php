@@ -13,7 +13,7 @@ use Puzl\PzCurr\Support\PzCurrAllocator;
 final class PzCurrAllocatorTest extends TestCase
 {
     // -------------------------------------------------------------------------
-    // split — exact division
+    // split — divisão exata
     // -------------------------------------------------------------------------
 
     public function test_split_exact_two_parts(): void
@@ -27,7 +27,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // split — with remainder (centavo conservation)
+    // split — com resto (conservação de centavos)
     // -------------------------------------------------------------------------
 
     public function test_split_with_remainder_three_parts(): void
@@ -35,11 +35,11 @@ final class PzCurrAllocatorTest extends TestCase
         $parts = PzCurrAllocator::split('10.00', 3, 2);
 
         $this->assertCount(3, $parts);
-        // First part receives the extra centavo.
+        // Primeira parte recebe o centavo extra.
         $this->assertSame('3.34', $parts[0]);
         $this->assertSame('3.33', $parts[1]);
         $this->assertSame('3.33', $parts[2]);
-        // Conservation.
+        // Conservação.
         $sum = array_reduce($parts, fn (string $carry, string $v) => bcadd($carry, $v, 2), '0.00');
         $this->assertSame('10.00', $sum);
     }
@@ -58,7 +58,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // allocate — ratios [7,3] with sub-cent remainder
+    // allocate — ratios [7,3] com resto sub-centavo
     // -------------------------------------------------------------------------
 
     public function test_allocate_seven_three_ratios(): void
@@ -68,20 +68,20 @@ final class PzCurrAllocatorTest extends TestCase
         $this->assertCount(2, $parts);
         $sum = bcadd($parts[0], $parts[1], 2);
         $this->assertSame('0.05', $sum);
-        // Part with ratio 7 gets the extra centavo (larger remainder).
+        // Parte com ratio 7 recebe o centavo extra (maior resto).
         $this->assertSame('0.04', $parts[0]);
         $this->assertSame('0.01', $parts[1]);
     }
 
     // -------------------------------------------------------------------------
-    // Order independence: multiset of results is identical for any ordering
+    // Independência de ordem: multisetas idênticas para qualquer ordenação
     // -------------------------------------------------------------------------
 
     public function test_allocate_order_independent_multiset(): void
     {
-        // With [7,3]: ratio 7 gets extra cent (larger ratio wins tie) → {0.04, 0.01}
-        // With [3,7]: ratio 7 still wins tie → {0.01, 0.04}
-        // Sorted multisets must be identical.
+        // Com [7,3]: ratio 7 recebe centavo extra → {0.04, 0.01}
+        // Com [3,7]: ratio 7 ainda vence empate → {0.01, 0.04}
+        // Multisetas ordenadas devem ser idênticas.
         $ratios1 = [3, 7];
         $ratios2 = [7, 3];
 
@@ -122,7 +122,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Negative values
+    // Valores negativos
     // -------------------------------------------------------------------------
 
     public function test_split_negative_conservation(): void
@@ -132,14 +132,14 @@ final class PzCurrAllocatorTest extends TestCase
         $this->assertCount(3, $parts);
         $sum = array_reduce($parts, fn (string $carry, string $v) => bcadd($carry, $v, 2), '0.00');
         $this->assertSame('-10.00', $sum);
-        // All parts must be negative.
+        // Todas as partes devem ser negativas.
         foreach ($parts as $part) {
             $this->assertLessThan(0, bccomp($part, '0', 2));
         }
     }
 
     // -------------------------------------------------------------------------
-    // Associative keys preserved
+    // Chaves associativas preservadas
     // -------------------------------------------------------------------------
 
     public function test_allocate_preserves_associative_keys(): void
@@ -163,7 +163,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Scale 0 (JPY)
+    // Escala 0 (JPY)
     // -------------------------------------------------------------------------
 
     public function test_split_scale_zero_jpy(): void
@@ -178,7 +178,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Float ratios converted safely (no float arithmetic leaking into results)
+    // Ratios float convertidos com segurança
     // -------------------------------------------------------------------------
 
     public function test_allocate_float_ratios_conservation(): void
@@ -191,7 +191,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Additional conservation scenarios
+    // Cenários adicionais de conservação
     // -------------------------------------------------------------------------
 
     /** @dataProvider provideConservationCases */
@@ -221,7 +221,7 @@ final class PzCurrAllocatorTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Degenerate input guards
+    // Proteções contra entradas degeneradas
     // -------------------------------------------------------------------------
 
     public function test_allocate_with_zero_sum_ratios_throws(): void

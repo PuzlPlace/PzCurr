@@ -12,7 +12,7 @@ final class PzCurrencyMismatchException extends PzCurrException
     public static function between(string $a, string $b): self
     {
         return new self(sprintf(
-            'Operação inválida entre moedas diferentes: "%s" e "%s".',
+            'Invalid operation between different currencies: "%s" and "%s".',
             $a,
             $b
         ));

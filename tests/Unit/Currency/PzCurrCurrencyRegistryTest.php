@@ -22,7 +22,7 @@ final class PzCurrCurrencyRegistryTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // ISO resolution
+    // Resolução ISO
     // -----------------------------------------------------------------------
 
     public function test_resolves_brl_with_correct_scale_and_symbol(): void
@@ -83,7 +83,7 @@ final class PzCurrCurrencyRegistryTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Invalid currency
+    // Moeda inválida
     // -----------------------------------------------------------------------
 
     public function test_throws_for_unknown_currency_code(): void
@@ -131,7 +131,7 @@ final class PzCurrCurrencyRegistryTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Custom currency registration
+    // Registro de moeda customizada
     // -----------------------------------------------------------------------
 
     public function test_registers_and_resolves_custom_currency(): void
@@ -156,7 +156,7 @@ final class PzCurrCurrencyRegistryTest extends TestCase
 
     public function test_custom_currency_takes_precedence_over_iso(): void
     {
-        // Override EUR with a custom entry to verify custom takes precedence.
+        // Sobrescreve EUR com entrada customizada para verificar precedência.
         $custom = new PzCurrCurrency('EUR', 978, 4, '€€');
         PzCurrCurrencyRegistry::register($custom);
 
@@ -179,9 +179,7 @@ final class PzCurrCurrencyRegistryTest extends TestCase
     {
         PzCurrCurrencyRegistry::register(new PzCurrCurrency('btc', 0, 8, '₿'));
 
-        // Regardless of the casing used at registration, the resolved value object
-        // must expose the canonical uppercase code so comparison and serialization
-        // stay consistent across instances.
+        // Independente do casing no registro, o VO expõe código canônico em maiúsculas.
         $this->assertSame('BTC', PzCurrCurrencyRegistry::of('btc')->code);
         $this->assertSame('BTC', PzCurrCurrencyRegistry::of('BTC')->code);
     }
@@ -195,7 +193,7 @@ final class PzCurrCurrencyRegistryTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Value Object immutability
+    // Imutabilidade do value object
     // -----------------------------------------------------------------------
 
     public function test_currency_properties_are_readonly(): void

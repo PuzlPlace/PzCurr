@@ -12,7 +12,7 @@ final class PzCurrCurrencyRegistry
     private static array $custom = [];
 
     /**
-     * ISO 4217 currency catalogue.
+     * Catálogo ISO 4217 de moedas.
      *
      * @var array<string, array{numeric: int, scale: int, symbol: string}>
      */
@@ -69,6 +69,7 @@ final class PzCurrCurrencyRegistry
         'ZAR' => ['numeric' => 710,  'scale' => 2, 'symbol' => 'R'],
     ];
 
+    /** Resolve código ISO para PzCurrCurrency (custom ou catálogo). */
     public static function of(string $code): PzCurrCurrency
     {
         $normalized = strtoupper($code);
@@ -85,14 +86,12 @@ final class PzCurrCurrencyRegistry
         throw PzCurrInvalidCurrencyException::forCode($code);
     }
 
+    /** Registra moeda customizada (sobrescreve ISO se mesmo código). */
     public static function register(PzCurrCurrency $currency): void
     {
         $normalized = strtoupper($currency->code);
 
-        // Store the currency under its normalized code, ensuring the value object
-        // itself always exposes the uppercase code. This keeps currency comparison
-        // (isSameValueAs / mismatch) and serialization consistent regardless of the
-        // casing used at registration time.
+        // Armazena sob código normalizado em maiúsculas para comparação e serialização consistentes.
         self::$custom[$normalized] = $normalized === $currency->code
             ? $currency
             : new PzCurrCurrency(
@@ -103,15 +102,14 @@ final class PzCurrCurrencyRegistry
             );
     }
 
+    /** Verifica se o código existe no catálogo ou em moedas customizadas. */
     public static function has(string $code): bool
     {
         $normalized = strtoupper($code);
         return isset(self::$custom[$normalized]) || isset(self::ISO[$normalized]);
     }
 
-    /**
-     * Removes all custom-registered currencies (useful for test isolation).
-     */
+    /** Remove moedas customizadas registradas (útil para isolamento em testes). */
     public static function resetCustom(): void
     {
         self::$custom = [];

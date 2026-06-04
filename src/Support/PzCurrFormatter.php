@@ -7,38 +7,25 @@ namespace Puzl\PzCurr\Support;
 use Puzl\PzCurr\Currency\PzCurrCurrency;
 
 /**
- * Formats a monetary amount for human display.
+ * Formata valor monetário para exibição humana.
  *
- * ## Manual mode (default / pt-BR)
- * Uses configurable thousands separator (default '.'), decimal separator (default ','),
- * and places the currency symbol before the number (e.g. 'R$ 1.234,56').
- * No float conversion occurs at any stage; the amount string is parsed directly.
+ * ## Modo manual (padrão / pt-BR)
+ * Usa separadores configuráveis e símbolo antes do número (ex.: 'R$ 1.234,56').
+ * Sem conversão para float; a string amount é parseada diretamente.
  *
- * ## Intl mode (optional)
- * When a non-null $locale is provided AND the PHP `intl` extension is loaded,
- * formatting is delegated to {@see \NumberFormatter}::formatCurrency.
+ * ## Modo Intl (opcional)
+ * Com $locale e extensão intl, delega a NumberFormatter::formatCurrency.
  *
- * ⚠ **Important (RN-01)**: NumberFormatter::formatCurrency() requires a PHP float.
- * This conversion is performed for **display purposes only** and must never be used
- * for calculation, comparison, or persistence. The canonical representation of any
- * monetary value is always the string stored in the adapter, not the float passed
- * here. For values within typical monetary ranges (up to ~PHP_INT_MAX / 100) the
- * double-precision representation is exact or differs only in trailing digits beyond
- * the currency's scale, so the displayed string is correct. Any consumer that needs
- * to persist or compute with the formatted value must use getAmount()/getMinorAmount()
- * instead.
- *
- * When $locale is provided but `intl` is unavailable, the formatter silently falls
- * back to manual mode without throwing an exception (graceful degradation — RF-06).
+ * ⚠ **Importante (RN-01)**: formatCurrency exige float PHP — apenas para exibição.
+ * A representação canônica permanece a string do adapter. Sem intl, cai no modo manual.
  */
 final class PzCurrFormatter
 {
     /**
-     * @param string $thousandsSeparator  Separator inserted every 3 integer digits (default '.').
-     * @param string $decimalSeparator    Separator between integer and decimal parts (default ',').
-     * @param bool   $symbolBefore        When true the currency symbol precedes the number.
-     * @param bool|null $intlAvailable    Override intl detection (null = auto via extension_loaded).
-     *                                   Pass false in tests to simulate absence of intl.
+     * @param string $thousandsSeparator Separador a cada 3 dígitos inteiros (padrão '.').
+     * @param string $decimalSeparator   Separador entre parte inteira e decimal (padrão ',').
+     * @param bool   $symbolBefore       Quando true, símbolo precede o número.
+     * @param bool|null $intlAvailable   Sobrescreve detecção de intl (null = auto).
      */
     public function __construct(
         private readonly string $thousandsSeparator = '.',
@@ -48,12 +35,9 @@ final class PzCurrFormatter
     ) {}
 
     /**
-     * Formats $amount (a decimal string such as '1234.56') for human display.
+     * Formata $amount (string decimal, ex.: '1234.56') para exibição.
      *
-     * @param string          $amount   Canonical decimal string from the adapter.
-     * @param PzCurrCurrency  $currency Currency metadata (code, symbol, scale).
-     * @param string|null     $locale   BCP-47 locale tag (e.g. 'pt_BR'). When provided
-     *                                  and intl is available, locale-aware formatting is used.
+     * @param string|null $locale Tag BCP-47 (ex.: 'pt_BR'); com intl, formata por locale.
      */
     public function format(string $amount, PzCurrCurrency $currency, ?string $locale = null): string
     {
@@ -67,15 +51,10 @@ final class PzCurrFormatter
     }
 
     // -------------------------------------------------------------------------
-    // Manual formatting
+    // Formatação manual
     // -------------------------------------------------------------------------
 
-    /**
-     * Builds a human-readable string using configured separators and the currency
-     * symbol, without any float conversion.
-     *
-     * Example output for BRL defaults: 'R$ 1.234,56'
-     */
+    /** Monta string legível com separadores e símbolo, sem conversão float. */
     private function formatManual(string $amount, PzCurrCurrency $currency): string
     {
         $negative = str_starts_with($amount, '-');
@@ -101,14 +80,7 @@ final class PzCurrFormatter
             : $number . ' ' . $currency->symbol;
     }
 
-    /**
-     * Inserts the thousands separator every 3 digits from the right.
-     *
-     * Examples (default separator '.'):
-     *   '1234'    → '1.234'
-     *   '1234567' → '1.234.567'
-     *   '123'     → '123'
-     */
+    /** Insere separador de milhares a cada 3 dígitos da direita para a esquerda. */
     private function applyThousandsSeparator(string $intPart): string
     {
         if (strlen($intPart) <= 3) {
@@ -127,16 +99,13 @@ final class PzCurrFormatter
     }
 
     // -------------------------------------------------------------------------
-    // Intl formatting
+    // Formatação Intl
     // -------------------------------------------------------------------------
 
     /**
-     * Delegates formatting to {@see \NumberFormatter}::formatCurrency.
+     * Delega formatação ao NumberFormatter.
      *
-     * The $amount string is cast to float solely for passing it to the intl API.
-     * This is a display-only operation — see class-level PHPDoc for the full rationale.
-     *
-     * Falls back to manual mode if the formatter fails (e.g. unknown currency code).
+     * O cast para float é apenas para a API intl (exibição). Em falha, usa modo manual.
      */
     private function formatWithIntl(string $amount, PzCurrCurrency $currency, string $locale): string
     {

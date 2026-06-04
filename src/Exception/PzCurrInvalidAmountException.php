@@ -12,7 +12,7 @@ final class PzCurrInvalidAmountException extends PzCurrException
     public static function forValue(string $value): self
     {
         return new self(sprintf(
-            'Valor monetário inválido: "%s". Informe uma string numérica válida (ex.: "19.90").',
+            'Invalid monetary amount: "%s". Provide a valid numeric string (e.g. "19.90").',
             $value
         ));
     }
@@ -23,8 +23,8 @@ final class PzCurrInvalidAmountException extends PzCurrException
     public static function minorAmountOverflow(string $minorAmount): self
     {
         return new self(sprintf(
-            'O valor em unidades menores ("%s") excede o intervalo seguro de inteiros do PHP. '
-            . 'Use getAmount() para obter a representação decimal completa sem perda de precisão.',
+            'Minor unit amount ("%s") exceeds PHP\'s safe integer range. '
+            . 'Use getAmount() for the full decimal representation without precision loss.',
             $minorAmount
         ));
     }

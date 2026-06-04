@@ -23,7 +23,7 @@ final class PzCurrFactoryTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // Default (no arguments, no config, no env)
+    // Padrão (sem argumentos, config ou env)
     // -------------------------------------------------------------------------
 
     public function testMakeWithoutArgumentsReturnsBcMath(): void

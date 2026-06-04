@@ -12,7 +12,7 @@ final class PzCurrDivisionByZeroException extends PzCurrException
     public static function forDivisor(string $operation): self
     {
         return new self(sprintf(
-            'Divisão por zero não é permitida na operação "%s".',
+            'Division by zero is not allowed in operation "%s".',
             $operation
         ));
     }
@@ -23,7 +23,7 @@ final class PzCurrDivisionByZeroException extends PzCurrException
     public static function zeroRatios(): self
     {
         return new self(
-            'A soma dos ratios informados a allocate() é zero; não é possível distribuir o valor.'
+            'The sum of ratios passed to allocate() is zero; cannot distribute the amount.'
         );
     }
 }

@@ -23,7 +23,7 @@ final class CurrencyRoundingIntegrationTest extends TestCase
     }
 
     // -----------------------------------------------------------------------
-    // Custom currency + rounding
+    // Moeda customizada + arredondamento
     // -----------------------------------------------------------------------
 
     public function test_btc_registered_and_rounded_half_up(): void
@@ -47,7 +47,7 @@ final class CurrencyRoundingIntegrationTest extends TestCase
 
         $result = PzCurrRoundingHelper::round('1.234567895', $currency->scale, PzCurrRoundingModeEnum::HALF_DOWN);
 
-        // guide digit at position 8 is '5', HALF_DOWN ties toward zero → truncate
+        // dígito guia na posição 8 é '5', HALF_DOWN empata em direção a zero → trunca
         $this->assertSame('1.23456789', $result);
     }
 
@@ -81,7 +81,7 @@ final class CurrencyRoundingIntegrationTest extends TestCase
         $currency = PzCurrCurrencyRegistry::of('JPY');
         $this->assertSame(0, $currency->scale);
 
-        // Negative: FLOOR toward -∞
+        // Negativo: FLOOR em direção a −∞
         $result = PzCurrRoundingHelper::round('-100.7', $currency->scale, PzCurrRoundingModeEnum::FLOOR);
         $this->assertSame('-101', $result);
 

@@ -12,8 +12,8 @@ final class PzCurrMissingExtensionException extends PzCurrException
     public static function bcmath(): self
     {
         return new self(
-            'A extensão PHP "bcmath" é obrigatória para o PzCurr mas não está disponível neste ambiente. '
-            . 'Habilite-a no php.ini ou instale o pacote correspondente.'
+            'The PHP "bcmath" extension is required for PzCurr but is not available in this environment. '
+            . 'Enable it in php.ini or install the corresponding package.'
         );
     }
 }

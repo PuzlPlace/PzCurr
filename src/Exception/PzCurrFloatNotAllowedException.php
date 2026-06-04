@@ -12,9 +12,9 @@ final class PzCurrFloatNotAllowedException extends PzCurrException
     public static function forValue(float $value): self
     {
         return new self(sprintf(
-            'Valor float não é permitido no modo STRICT: %s. Float (IEEE 754) pode perder '
-            . 'precisão; informe uma string decimal (ex.: "19.90") ou um int. '
-            . 'Desative o modo STRICT (config pzcurr.strict_floats = false) para aceitar floats.',
+            'Float values are not allowed in STRICT mode: %s. Float (IEEE 754) may lose '
+            . 'precision; use a decimal string (e.g. "19.90") or an int. '
+            . 'Disable STRICT mode (config pzcurr.strict_floats = false) to accept floats.',
             var_export($value, true)
         ));
     }

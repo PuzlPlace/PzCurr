@@ -10,13 +10,13 @@ use Puzl\PzCurr\Exception\PzCurrDivisionByZeroException;
 use Puzl\PzCurr\Exception\PzCurrInvalidAmountException;
 
 /**
- * Guards against degenerate inputs that would otherwise leak native PHP errors
- * (DivisionByZeroError, TypeError) or silently corrupt values (int overflow).
+ * Proteções contra entradas degeneradas que vazariam erros nativos do PHP
+ * (DivisionByZeroError, TypeError) ou corromperiam valores (overflow de int).
  */
 final class PzCurrBcMathGuardsTest extends TestCase
 {
     // -------------------------------------------------------------------------
-    // Division by zero — typed exceptions instead of native DivisionByZeroError
+    // Divisão por zero — exceções tipadas em vez de DivisionByZeroError nativo
     // -------------------------------------------------------------------------
 
     public function test_divide_zero_throws_typed_exception(): void
@@ -65,7 +65,7 @@ final class PzCurrBcMathGuardsTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
-    // getMinorAmount overflow guard
+    // Proteção de overflow em getMinorAmount
     // -------------------------------------------------------------------------
 
     public function test_get_minor_amount_overflow_throws(): void
